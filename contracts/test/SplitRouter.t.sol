@@ -153,7 +153,9 @@ contract SplitRouterTest is Base {
 
     function test_fullCycle_payDrawRepayBorrowMore() public {
         _draw(merchant, 200 * ONE, 12 * ONE, 1_000);
-        for (uint256 i; i < 22; i++) _pay(customer, merchant, 100 * ONE);
+        for (uint256 i; i < 22; i++) {
+            _pay(customer, merchant, 100 * ONE);
+        }
         assertEq(pool.repaidCount(merchant), 1);
         _draw(merchant, 400 * ONE, 24 * ONE, 1_000);
         assertEq(pool.advanceOf(merchant).owed, 424 * ONE);

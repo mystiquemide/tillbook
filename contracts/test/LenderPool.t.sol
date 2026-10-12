@@ -91,7 +91,9 @@ contract LenderPoolTest is Base {
         _deposit(lender, 1_000 * ONE);
         _draw(merchant, 600 * ONE, 36 * ONE, 1_000);
         vm.prank(lender);
-        vm.expectRevert(abi.encodeWithSelector(ERC4626.ERC4626ExceededMaxWithdraw.selector, lender, 401 * ONE, 400 * ONE));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC4626.ERC4626ExceededMaxWithdraw.selector, lender, 401 * ONE, 400 * ONE)
+        );
         pool.withdraw(401 * ONE, lender, lender);
     }
 

@@ -33,9 +33,8 @@ contract LenderPool is ERC4626, EIP712, ReentrancyGuard {
         bool active;
     }
 
-    bytes32 public constant OFFER_TYPEHASH = keccak256(
-        "Offer(address merchant,uint256 amount,uint256 fee,uint16 holdbackBps,uint256 nonce,uint256 expiry)"
-    );
+    bytes32 public constant OFFER_TYPEHASH =
+        keccak256("Offer(address merchant,uint256 amount,uint256 fee,uint16 holdbackBps,uint256 nonce,uint256 expiry)");
     uint16 public constant MAX_HOLDBACK_BPS = 5_000;
     uint256 public constant BPS = 10_000;
 
@@ -140,10 +139,7 @@ contract LenderPool is ERC4626, EIP712, ReentrancyGuard {
         // Casts are safe: amount + fee is checked against type(uint128).max above.
         // forge-lint: disable-next-line(unsafe-typecast)
         _advances[o.merchant] = Advance({
-            owed: uint128(o.amount + o.fee),
-            principal: uint128(o.amount),
-            holdbackBps: o.holdbackBps,
-            active: true
+            owed: uint128(o.amount + o.fee), principal: uint128(o.amount), holdbackBps: o.holdbackBps, active: true
         });
         principalOutstanding += o.amount;
 
