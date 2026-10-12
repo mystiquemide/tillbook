@@ -23,7 +23,7 @@ contract UnderwriterParityTest is Test {
         vm.chainId(json.readUint(".chainId"));
         usdc = new MockUSDC();
         address poolAddr = json.readAddress(".pool");
-        deployCodeTo("LenderPool.sol:LenderPool", abi.encode(usdc, vm.addr(KEY)), poolAddr);
+        deployCodeTo("LenderPool.sol:LenderPool", abi.encode(usdc, vm.addr(KEY), type(uint256).max), poolAddr);
         pool = LenderPool(poolAddr);
         router = new SplitRouter(pool);
 

@@ -39,6 +39,8 @@ contract LenderPool is ERC4626, EIP712, ReentrancyGuard {
     uint256 public constant BPS = 10_000;
 
     address public immutable underwriter;
+    /// @notice Hard cap on a single advance. Limits the damage a leaked underwriter key can do.
+    uint256 public immutable maxAdvance;
 
     mapping(address => Advance) internal _advances;
     mapping(address => uint256) public nonces;
@@ -61,14 +63,19 @@ contract LenderPool is ERC4626, EIP712, ReentrancyGuard {
     error InvalidOffer();
     error InsufficientLiquidity();
     error ZeroAmount();
+    error AboveMaxAdvance();
 
-    constructor(IERC20 asset_, address underwriter_)
+    constructor(IERC20 asset_, address underwriter_, uint256 maxAdvance_)
         ERC20("Tillbook Pool Share", "tbUSDC")
         ERC4626(asset_)
         EIP712("Tillbook", "1")
     {
-        if (address(asset_) == address(0) || underwriter_ == address(0)) revert ZeroAddress();
+        if (address(asset_) == address(0) || underwriter_ == address(0)) {
+            revert ZeroAddress();
+        }
+        if (maxAdvance_ == 0) revert InvalidOffer();
         underwriter = underwriter_;
+        maxAdvance = maxAdvance_;
     }
 
     // ---------------------------------------------------------------- views
@@ -127,6 +134,7 @@ contract LenderPool is ERC4626, EIP712, ReentrancyGuard {
         if (o.amount == 0 || o.fee > o.amount || o.holdbackBps == 0 || o.holdbackBps > MAX_HOLDBACK_BPS) {
             revert InvalidOffer();
         }
+        if (o.amount > maxAdvance) revert AboveMaxAdvance();
         if (o.amount + o.fee > type(uint128).max) revert InvalidOffer();
         if (_advances[o.merchant].active) revert AdvanceActive();
 

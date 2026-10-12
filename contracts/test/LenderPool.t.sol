@@ -23,12 +23,32 @@ contract LenderPoolTest is Base {
 
     function test_constructor_revertsOnZeroUnderwriter() public {
         vm.expectRevert(LenderPool.ZeroAddress.selector);
-        new LenderPool(usdc, address(0));
+        new LenderPool(usdc, address(0), MAX_ADV);
     }
 
     function test_constructor_revertsOnZeroAsset() public {
         vm.expectRevert();
-        new LenderPool(IERC20(address(0)), underwriter);
+        new LenderPool(IERC20(address(0)), underwriter, MAX_ADV);
+    }
+
+    function test_domainSeparator_matchesEip712Spec() public view {
+        bytes32 expected = keccak256(
+            abi.encode(
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                keccak256("Tillbook"),
+                keccak256("1"),
+                block.chainid,
+                address(pool)
+            )
+        );
+        assertEq(pool.domainSeparator(), expected);
+    }
+
+    function test_hashOffer_matchesManualEncoding() public view {
+        LenderPool.Offer memory o = _offer(merchant, 123 * ONE, 7 * ONE, 1_234);
+        bytes32 structHash =
+            keccak256(abi.encode(pool.OFFER_TYPEHASH(), o.merchant, o.amount, o.fee, o.holdbackBps, o.nonce, o.expiry));
+        assertEq(pool.hashOffer(o), keccak256(abi.encodePacked("\x19\x01", pool.domainSeparator(), structHash)));
     }
 
     function test_initialState() public view {
@@ -437,7 +457,7 @@ contract LenderPoolTest is Base {
 
     function test_requestAdvance_signatureNotValidOnOtherPool() public {
         _deposit(lender, 1_000 * ONE);
-        LenderPool other = new LenderPool(usdc, underwriter);
+        LenderPool other = new LenderPool(usdc, underwriter, MAX_ADV);
         vm.prank(lender);
         usdc.approve(address(other), type(uint256).max);
         vm.prank(lender);

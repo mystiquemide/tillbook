@@ -22,6 +22,8 @@ contract SplitRouter {
     error ZeroAddress();
     error ZeroAmount();
     error TokenMismatch();
+    error InvalidMerchant();
+    error RepayMismatch();
 
     constructor(LenderPool pool_) {
         if (address(pool_) == address(0)) revert ZeroAddress();
@@ -41,6 +43,7 @@ contract SplitRouter {
     /// @notice Pay `merchant` `amount` of the pool's token. `ref` is a free-form order reference.
     function pay(address merchant, uint256 amount, bytes32 ref) external {
         if (merchant == address(0)) revert ZeroAddress();
+        if (merchant == address(this) || merchant == address(pool)) revert InvalidMerchant();
         if (amount == 0) revert ZeroAmount();
 
         (uint256 toPool, uint256 toMerchant) = quote(merchant, amount);
@@ -48,7 +51,7 @@ contract SplitRouter {
         if (toPool > 0) {
             token.safeTransferFrom(msg.sender, address(this), toPool);
             token.forceApprove(address(pool), toPool);
-            pool.repay(merchant, toPool);
+            if (pool.repay(merchant, toPool) != toPool) revert RepayMismatch();
         }
         if (toMerchant > 0) {
             token.safeTransferFrom(msg.sender, merchant, toMerchant);

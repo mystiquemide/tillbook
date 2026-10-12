@@ -22,11 +22,13 @@ abstract contract Base is Test {
     address internal stranger = makeAddr("stranger");
 
     uint256 internal constant ONE = 1e6;
+    /// @dev Unit tests use a cap far above any amount they draw; the cap itself has dedicated tests.
+    uint256 internal constant MAX_ADV = type(uint128).max;
 
     function setUp() public virtual {
         underwriter = vm.addr(underwriterKey);
         usdc = new MockUSDC();
-        pool = new LenderPool(usdc, underwriter);
+        pool = new LenderPool(usdc, underwriter, MAX_ADV);
         router = new SplitRouter(pool);
 
         address[4] memory funded = [lender, lender2, customer, stranger];

@@ -124,7 +124,7 @@ contract InvariantTest is Test {
 
     function setUp() public {
         usdc = new MockUSDC();
-        pool = new LenderPool(usdc, vm.addr(KEY));
+        pool = new LenderPool(usdc, vm.addr(KEY), type(uint256).max);
         router = new SplitRouter(pool);
         handler = new Handler(usdc, pool, router, KEY);
         targetContract(address(handler));

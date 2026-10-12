@@ -11,6 +11,8 @@ import {SplitRouter} from "../src/SplitRouter.sol";
 contract Deploy is Script {
     uint256 public constant MONAD_MAINNET = 143;
     address public constant MONAD_USDC = 0x754704Bc059F8C67012fEd69BC8A327a5aafb603;
+    /// @dev Matches MAX_ADVANCE in the underwriter formula.
+    uint256 public constant MAX_ADVANCE = 5_000e6;
 
     function run() external returns (LenderPool pool, SplitRouter router) {
         require(block.chainid == MONAD_MAINNET, "Deploy: not Monad mainnet");
@@ -24,16 +26,18 @@ contract Deploy is Script {
         require(keccak256(bytes(IERC20Metadata(usdc).symbol())) == keccak256("USDC"), "Deploy: token is not USDC");
 
         vm.startBroadcast();
-        pool = new LenderPool(IERC20Metadata(usdc), underwriter);
+        pool = new LenderPool(IERC20Metadata(usdc), underwriter, MAX_ADVANCE);
         router = new SplitRouter(pool);
         vm.stopBroadcast();
 
         require(pool.underwriter() == underwriter, "Deploy: underwriter mismatch");
+        require(pool.maxAdvance() == MAX_ADVANCE, "Deploy: max advance mismatch");
         require(address(router.pool()) == address(pool), "Deploy: router not wired");
         require(address(router.token()) == usdc, "Deploy: token mismatch");
 
         console2.log("LenderPool ", address(pool));
         console2.log("SplitRouter", address(router));
         console2.log("Underwriter", underwriter);
+        console2.log("MaxAdvance ", MAX_ADVANCE);
     }
 }
