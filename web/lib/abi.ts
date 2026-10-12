@@ -29,6 +29,7 @@ export const poolAbi = parseAbi([
 ]);
 
 export const routerAbi = parseAbi([
+  "event Payment(address indexed merchant, address indexed payer, uint256 amount, uint256 repaid, bytes32 ref)",
   "function pay(address merchant, uint256 amount, bytes32 ref)",
   "function quote(address merchant, uint256 amount) view returns (uint256 toPool, uint256 toMerchant)",
 ]);

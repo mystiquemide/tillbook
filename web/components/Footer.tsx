@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { links } from "@/lib/links";
-import { photos } from "@/lib/images";
 
 const columns = [
   {
@@ -25,7 +24,6 @@ const columns = [
 ];
 
 export function Footer() {
-  const credits = Object.values(photos);
   return (
     <footer className="border-t border-hairline">
       <div className="mx-auto grid max-w-[1200px] gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -59,17 +57,6 @@ export function Footer() {
       </div>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-t border-hairline px-6 py-6 text-[12px] leading-[1.6] text-ink-3 md:flex-row md:justify-between">
         <p>Built for Monad Metropolis, 2026. MIT licensed.</p>
-        <p>
-          Photos on Unsplash by{" "}
-          {credits.map((p, i) => (
-            <span key={p.credit}>
-              <a href={p.page} target="_blank" rel="noreferrer" className="underline-offset-2 hover:underline">
-                {p.credit}
-              </a>
-              {i < credits.length - 1 ? ", " : "."}
-            </span>
-          ))}
-        </p>
       </div>
     </footer>
   );

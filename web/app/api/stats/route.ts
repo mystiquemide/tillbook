@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import { blockRanges } from "@tillbook/underwriter";
+import { getAbiItem } from "viem";
+import { poolAbi, routerAbi } from "@/lib/abi";
+import { addresses, deployBlock, isLive } from "@/lib/chain";
+import { LOG_CHUNK, publicClient } from "@/lib/server";
+
+export const dynamic = "force-dynamic";
+
+/** Network-wide totals for the landing page, read from the pool and router. */
+export async function GET() {
+  if (!isLive) return NextResponse.json({ error: "not_live" }, { status: 503 });
+  try {
+    const pool = addresses.pool!;
+    const [head, totalAssets, outstanding] = await Promise.all([
+      publicClient.getBlockNumber(),
+      publicClient.readContract({ address: pool, abi: poolAbi, functionName: "totalAssets" }),
+      publicClient.readContract({ address: pool, abi: poolAbi, functionName: "principalOutstanding" }),
+    ]);
+    const paymentEv = getAbiItem({ abi: routerAbi, name: "Payment" });
+    const drawnEv = getAbiItem({ abi: poolAbi, name: "AdvanceDrawn" });
+    const repaidEv = getAbiItem({ abi: poolAbi, name: "AdvanceRepaid" });
+
+    let payments = 0;
+    let volume = 0n;
+    let advances = 0;
+    let advanced = 0n;
+    let repaid = 0;
+    const merchants = new Set<string>();
+
+    for (const [fromBlock, toBlock] of blockRanges(deployBlock, head, LOG_CHUNK)) {
+      const [p, d, r] = await Promise.all([
+        publicClient.getLogs({ address: addresses.router!, event: paymentEv, fromBlock, toBlock }),
+        publicClient.getLogs({ address: pool, event: drawnEv, fromBlock, toBlock }),
+        publicClient.getLogs({ address: pool, event: repaidEv, fromBlock, toBlock }),
+      ]);
+      for (const l of p) {
+        payments++;
+        volume += l.args.amount!;
+        merchants.add(l.args.merchant!.toLowerCase());
+      }
+      for (const l of d) {
+        advances++;
+        advanced += l.args.amount!;
+      }
+      repaid += r.length;
+    }
+
+    return NextResponse.json(
+      {
+        totalAssets: totalAssets.toString(),
+        outstanding: outstanding.toString(),
+        payments,
+        volume: volume.toString(),
+        merchants: merchants.size,
+        advances,
+        advanced: advanced.toString(),
+        repaid,
+      },
+      { headers: { "cache-control": "no-store" } },
+    );
+  } catch (err) {
+    console.error("stats read failed", err);
+    return NextResponse.json({ error: "rpc_unavailable" }, { status: 502 });
+  }
+}

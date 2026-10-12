@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { ButtonLink } from "../Button";
 import { BrowserFrame } from "./BrowserFrame";
-import { photos } from "@/lib/images";
 
 export function Hero() {
   return (
@@ -31,9 +30,7 @@ export function Hero() {
         </div>
 
         <div className="relative mt-14 md:mt-20">
-          <div className="absolute inset-x-0 top-[18%] bottom-0">
-            <Image src={photos.hero.src} alt={photos.hero.alt} fill sizes="1392px" className="object-cover object-[50%_45%]" />
-          </div>
+          <div className="absolute inset-x-0 top-[18%] bottom-0 bg-[#ebe7ff]" aria-hidden="true" />
           <div className="relative mx-auto hidden max-w-[1040px] px-8 pb-16 md:block">
             <BrowserFrame src="/screens/merchant.jpg" alt="Tillbook merchant dashboard with a sales ledger and an advance offer" path="merchant" />
           </div>
