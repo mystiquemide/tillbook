@@ -1,4 +1,4 @@
-import { defineChain, type Address } from "viem";
+import { defineChain, getAddress, type Address } from "viem";
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? 143);
 const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL ?? "https://rpc.monad.xyz";
@@ -12,7 +12,7 @@ export const monad = defineChain({
   blockExplorers: { default: { name: "Monadscan", url: explorerUrl } },
 });
 
-const addr = (v: string | undefined) => (v && /^0x[0-9a-fA-F]{40}$/.test(v) ? (v as Address) : undefined);
+const addr = (v: string | undefined) => (v && /^0x[0-9a-fA-F]{40}$/.test(v) ? getAddress(v) : undefined);
 
 export const addresses = {
   token: addr(process.env.NEXT_PUBLIC_TOKEN_ADDRESS) ?? ("0x754704Bc059F8C67012fEd69BC8A327a5aafb603" as Address),

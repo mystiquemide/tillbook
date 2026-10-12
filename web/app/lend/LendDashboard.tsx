@@ -236,7 +236,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
         <label htmlFor="amount" className="text-[13px] text-ink-2">
           Amount in USDC
         </label>
-        <div className="mt-2 flex items-center gap-2 rounded-full bg-surface px-4 ring-1 ring-hairline focus-within:ring-primary">
+        <div className="mt-2 flex items-center gap-2 rounded-full bg-surface px-4 ring-1 ring-hairline focus-within:ring-2 focus-within:ring-primary">
           <input
             id="amount"
             inputMode="decimal"
@@ -244,7 +244,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
             placeholder="0.00"
             value={input}
             onChange={(e) => setInput(e.target.value.replace(",", "."))}
-            className="h-12 min-w-0 flex-1 bg-transparent font-mono text-[18px] outline-none"
+            className="h-12 min-w-0 flex-1 bg-transparent font-mono text-[18px] outline-none focus-visible:outline-none"
           />
           <button
             type="button"
