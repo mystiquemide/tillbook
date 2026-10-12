@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-type Variant = "primary" | "tint" | "dark" | "light";
+type Variant = "primary" | "tint" | "dark" | "light" | "glass";
 type Size = "lg" | "sm";
 
 const variants: Record<Variant, string> = {
@@ -9,6 +9,7 @@ const variants: Record<Variant, string> = {
   tint: "bg-primary-tint text-primary-ink hover:bg-[rgba(110,84,255,0.16)]",
   dark: "bg-ink text-white hover:bg-[#3a3436]",
   light: "bg-white text-ink hover:bg-[#f1f0ee]",
+  glass: "bg-white/10 text-white hover:bg-white/15",
 };
 
 const sizes: Record<Size, string> = {
