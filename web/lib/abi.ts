@@ -24,6 +24,8 @@ export const poolAbi = parseAbi([
   "function withdraw(uint256 assets, address receiver, address owner) returns (uint256)",
   "event AdvanceDrawn(address indexed merchant, uint256 amount, uint256 fee, uint16 holdbackBps, uint256 nonce)",
   "event AdvanceRepaid(address indexed merchant, uint256 repaidCount)",
+  "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
 ]);
 
 export const routerAbi = parseAbi([
