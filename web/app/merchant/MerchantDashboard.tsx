@@ -117,7 +117,7 @@ function PayLink({ address }: { address: string }) {
   return (
     <div className="flex items-center gap-2">
       <code className="hidden max-w-[320px] truncate rounded-full bg-surface px-4 py-2 font-mono text-[13px] text-ink-2 ring-1 ring-hairline sm:block">
-        {url}
+        pay/{short(address)}
       </code>
       <button
         type="button"
