@@ -1,10 +1,23 @@
 # Tillbook
 
-**Your sales are your credit.** Merchants take USDC on Monad, every sale builds a public record, and any lender can fund an advance against it. A slice of each later sale repays the advance in the same transaction.
+**Your sales are your credit.** Tillbook is onchain revenue-based financing for small merchants. Merchants take USDC stablecoin payments on Monad, every sale builds a public credit record, and any lender can fund an advance against it. A slice of each later sale repays the advance in the same transaction, so repayment follows real revenue instead of a fixed daily debit.
 
 **[Open the app](https://tillbook.midelabs.xyz)** · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions)
 
 ![Merchant dashboard](web/public/screens/merchant.jpg)
+
+## At a glance
+
+| | |
+|---|---|
+| **Category** | Onchain finance: payments, lending and credit (Monad Metropolis, Track 01: Onchain Finance & Trading) |
+| **Status** | Live on Monad mainnet with verified contracts and a public web app |
+| **Who it serves** | Small merchants who need working capital, customers who pay in USDC, and lenders who want yield backed by real sales |
+| **How lenders earn** | A flat 6% fee on each advance, paid into the ERC-4626 vault slice by slice as merchants make sales |
+| **Core contracts** | `SplitRouter` (payment split) and `LenderPool` (ERC-4626 vault with EIP-712 signed offers) |
+| **Integrations** | Monad, USDC, OpenZeppelin, Privy embedded wallets, Envio HyperIndex, Alchemy RPC |
+| **Quality** | 1,336 automated tests including fuzz, invariant and mainnet-fork tests, run in CI on every push |
+| **Try it** | [tillbook.midelabs.xyz](https://tillbook.midelabs.xyz) · [Live proof page](https://tillbook.midelabs.xyz/proof) |
 
 ## Why this exists
 
@@ -14,7 +27,7 @@ Small merchants get financing from whoever processes their payments, and the dec
 - A Stripe Capital offer fell from about $35,000 to $6,000 while the merchant's revenue grew. ([r/stripe](https://www.reddit.com/r/stripe/comments/1p1g2sb/stripe_capital_new_offer_update/))
 - Merchant cash advances take fixed daily debits whether the shop sold anything that day or not.
 
-The merchant's repayment history is locked inside one platform, so they can't take it anywhere else. Tillbook keeps that history onchain, where the merchant owns it and any lender can read it.
+The merchant's repayment history is locked inside one platform, so they can't take it anywhere else. Tillbook keeps that history onchain, where the merchant owns it and any lender can read it. The result is transparent underwriting, portable credit and capital that flows to merchants based on what they actually sell.
 
 ## How it works
 
@@ -177,6 +190,12 @@ The script refuses to run on any chain except Monad mainnet and checks that the 
 - No KYC. A regulated version would need it.
 - Someone who deposits right before a large repayment can capture part of its fee. Fees arrive in small slices with each sale, which keeps this small.
 
+## Business model
+
+- **Lenders** earn the 6% advance fee. Returns come from real merchant revenue, not token emissions.
+- **Merchants** pay nothing to accept payments. They only pay the flat fee when they choose to draw an advance.
+- **Tillbook** can take a small protocol fee on advance fees once the pool has volume. The contracts have no fee switch today, so any fee would ship as a new, openly versioned pool.
+
 ## Where this goes next
 
 - **Point-of-sale plugins** so existing card-and-QR checkouts can route USDC through the split without a new app.
@@ -184,7 +203,6 @@ The script refuses to run on any chain except Monad mainnet and checks that the 
 - **More stablecoins**, starting with AUSD, through a second pool per asset. The contracts already take the token as a constructor argument.
 - **Multiple underwriters and pools** competing on price for the same public record.
 - **Portable credit history** other protocols can read, so a merchant's record works beyond Tillbook.
-- **A small protocol fee** on advance fees once the pool has volume.
 
 ## Prior art
 
