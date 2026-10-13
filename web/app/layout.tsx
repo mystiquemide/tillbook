@@ -11,6 +11,7 @@ const description =
   "Take USDC payments on Monad. Every sale builds a record any lender can see. Draw an advance and repay it a little from each sale.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://tillbook.vercel.app"),
   title: "Tillbook: your sales are your credit",
   description,
   openGraph: { title: "Tillbook: your sales are your credit", description, type: "website", siteName: "Tillbook" },
