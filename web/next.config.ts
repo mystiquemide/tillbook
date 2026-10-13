@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     // The underwriter package uses NodeNext-style ".js" imports for its ".ts" sources.
     config.resolve.extensionAlias = { ".js": [".ts", ".tsx", ".js"] };
+    // Optional peers of WalletConnect's logger and storage that this app never loads.
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
 };

@@ -12,11 +12,11 @@ import { useTx } from "@/lib/useTx";
 const primary =
   "h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-surface disabled:text-ink-2 disabled:ring-1 disabled:ring-hairline";
 
-export function Checkout({ merchant }: { merchant: `0x${string}` }) {
+export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`; requested?: string }) {
   const { address, isConnected, chainId } = useAccount();
   const { connect, connectors, isPending: connecting } = useConnect();
   const { switchChain, isPending: switching } = useSwitchChain();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(requested);
   const [paid, setPaid] = useState<{ amount: bigint; toPool: bigint } | null>(null);
   const tx = useTx();
 

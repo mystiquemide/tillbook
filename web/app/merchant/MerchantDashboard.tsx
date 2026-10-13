@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { formatUnits } from "viem";
 import { useEffect, useState } from "react";
 import { useAccount, useReadContracts } from "wagmi";
 import { NotLive, Notice } from "@/components/app/Notice";
@@ -9,8 +10,9 @@ import { TxStatus } from "@/components/app/TxStatus";
 import { poolAbi } from "@/lib/abi";
 import { addresses, isLive, monad, txUrl } from "@/lib/chain";
 import { date, short, usdc } from "@/lib/format";
-import { ApiError, fetchMerchant, type ApiInputs, type MerchantResponse } from "@/lib/merchantApi";
+import { ApiError, fetchMerchant, type ApiInputs, type ApiPayment, type MerchantResponse } from "@/lib/merchantApi";
 import { useTx } from "@/lib/useTx";
+import { RequestPayment } from "./RequestPayment";
 
 export function MerchantDashboard() {
   const { address, isConnected, chainId } = useAccount();
@@ -105,6 +107,9 @@ function Connected({ address }: { address: `0x${string}` }) {
           )}
           <div className="mt-3">
             <TxStatus state={tx.state} />
+          </div>
+          <div className="mt-6">
+            <RequestPayment address={address} />
           </div>
         </aside>
       </div>
@@ -208,7 +213,10 @@ export function Ledger({ query, empty }: { query: ReturnType<typeof useQuery<Mer
       </div>
       <div className="mt-3 flex items-center justify-between gap-4">
         <p className="text-[13px] text-ink-3">
-          {all.length} {all.length === 1 ? "sale" : "sales"}. Amounts in USDC.
+          {all.length} {all.length === 1 ? "sale" : "sales"}. Amounts in USDC.{" "}
+          <button type="button" onClick={() => downloadCsv(all)} className="text-primary-ink hover:underline">
+            Download CSV
+          </button>
         </p>
         {all.length > PAGE && (
           <button type="button" onClick={() => setShowAll((v) => !v)} className="text-[14px] text-primary-ink hover:underline">
@@ -378,4 +386,25 @@ function useNow() {
     return () => clearInterval(t);
   }, []);
   return now;
+}
+
+/** Exports the full ledger for bookkeeping. Every row keeps its transaction hash so it can be checked onchain. */
+function downloadCsv(payments: ApiPayment[]) {
+  const rows = [
+    ["date_utc", "customer", "amount_usdc", "repaid_usdc", "to_merchant_usdc", "transaction"],
+    ...payments.map((p) => [
+      new Date(Number(p.timestamp) * 1000).toISOString(),
+      p.payer,
+      formatUnits(BigInt(p.amount), 6),
+      formatUnits(BigInt(p.repaid), 6),
+      formatUnits(BigInt(p.amount) - BigInt(p.repaid), 6),
+      p.txHash,
+    ]),
+  ];
+  const blob = new Blob([rows.map((r) => r.join(",")).join("\n") + "\n"], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tillbook-sales.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
 }

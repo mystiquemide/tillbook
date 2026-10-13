@@ -4,11 +4,21 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { NotLive, Notice } from "@/components/app/Notice";
 import { addresses, isLive } from "@/lib/chain";
 import { Checkout } from "./Checkout";
+import { parseUsdc } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Pay | Tillbook" };
 
-export default async function PayPage({ params }: { params: Promise<{ merchant: string }> }) {
+export default async function PayPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ merchant: string }>;
+  searchParams: Promise<{ amount?: string | string[] }>;
+}) {
   const { merchant } = await params;
+  // A payment request link can carry the amount, e.g. /pay/0x...?amount=25.50. Ignore anything that isn't a valid amount.
+  const raw = (await searchParams).amount;
+  const requested = typeof raw === "string" && parseUsdc(raw) !== null ? raw.trim() : "";
   const valid =
     isAddress(merchant) &&
     getAddress(merchant) !== addresses.pool &&
@@ -29,7 +39,7 @@ export default async function PayPage({ params }: { params: Promise<{ merchant: 
             </Notice>
           </>
         ) : (
-          <Checkout merchant={getAddress(merchant)} />
+          <Checkout merchant={getAddress(merchant)} requested={requested} />
         )}
       </main>
     </>
