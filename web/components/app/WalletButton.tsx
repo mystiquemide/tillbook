@@ -51,7 +51,18 @@ export function WalletButton() {
     );
   }
 
-  return <AccountMenu address={address!} onSignOut={disconnect} />;
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        className="hidden h-9 items-center gap-2 rounded-full px-3 text-[13px] text-ink-2 ring-1 ring-hairline md:inline-flex"
+        title="Chain 143. Payments and deposits use native USDC."
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-positive" aria-hidden="true" />
+        Monad mainnet · USDC
+      </span>
+      <AccountMenu address={address!} onSignOut={disconnect} />
+    </div>
+  );
 }
 
 /** Connected wallet: copy the address, open it on the explorer, or sign out. */
@@ -95,7 +106,7 @@ function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () =>
           role="menu"
           className="absolute right-0 z-50 mt-2 w-64 rounded-[16px] border border-hairline bg-white p-2 shadow-[0_18px_40px_-16px_rgba(33,29,29,0.28)]"
         >
-          <p className="px-3 pt-2 pb-1 text-[12px] text-ink-3">Signed in on Monad</p>
+          <p className="px-3 pt-2 pb-1 text-[12px] text-ink-3">Signed in on Monad mainnet (chain 143)</p>
           <p className="px-3 pb-3 font-mono text-[12px] break-all text-ink-2">{address}</p>
           <button
             type="button"
