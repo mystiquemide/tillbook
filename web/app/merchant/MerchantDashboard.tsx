@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount, useReadContracts } from "wagmi";
 import { NotLive, Notice } from "@/components/app/Notice";
@@ -74,7 +75,12 @@ function Connected({ address }: { address: `0x${string}` }) {
     <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <Heading />
-        <PayLink address={address} />
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href={`/m/${address}`} className="text-[15px] text-primary-ink hover:underline">
+            Public record
+          </Link>
+          <PayLink address={address} />
+        </div>
       </div>
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <section aria-labelledby="ledger-title" className="min-w-0">
@@ -106,7 +112,7 @@ function Connected({ address }: { address: `0x${string}` }) {
   );
 }
 
-function Reading() {
+export function Reading() {
   return <p className="py-6 text-[15px] text-ink-2">Reading from Monad...</p>;
 }
 
@@ -136,7 +142,7 @@ function PayLink({ address }: { address: string }) {
 
 const PAGE = 12;
 
-function Ledger({ query }: { query: ReturnType<typeof useQuery<MerchantResponse>> }) {
+export function Ledger({ query, empty }: { query: ReturnType<typeof useQuery<MerchantResponse>>; empty?: React.ReactNode }) {
   const [showAll, setShowAll] = useState(false);
   if (query.isLoading) return <Reading />;
   if (query.isError) {
@@ -147,7 +153,7 @@ function Ledger({ query }: { query: ReturnType<typeof useQuery<MerchantResponse>
   }
   const all = [...(query.data?.payments ?? [])].reverse();
   if (all.length === 0)
-    return <Notice title="No sales yet.">Share your payment link to start your record. Every sale you take through it shows up here.</Notice>;
+    return empty ?? <Notice title="No sales yet.">Share your payment link to start your record. Every sale you take through it shows up here.</Notice>;
 
   const payments = showAll ? all : all.slice(0, PAGE);
   return (
@@ -335,7 +341,7 @@ function Repaid({ count }: { count: bigint }) {
   );
 }
 
-function Breakdown({ inputs }: { inputs: ApiInputs }) {
+export function Breakdown({ inputs }: { inputs: ApiInputs }) {
   const rows: [string, string][] = [
     ["Sales, last 30 days", usdc(BigInt(inputs.volume))],
     ["Counted (20% per customer)", usdc(BigInt(inputs.cappedVolume))],
@@ -361,7 +367,7 @@ function Breakdown({ inputs }: { inputs: ApiInputs }) {
   );
 }
 
-function Panel({ children }: { children: React.ReactNode }) {
+export function Panel({ children }: { children: React.ReactNode }) {
   return <div className="rounded-[16px] border border-hairline bg-white p-6">{children}</div>;
 }
 

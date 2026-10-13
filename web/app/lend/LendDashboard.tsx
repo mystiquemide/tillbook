@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { formatUnits } from "viem";
@@ -309,9 +310,9 @@ function Advances({ query }: { query: ReturnType<typeof useQuery<Advance[]>> }) 
       {rows.map((a) => (
         <li key={a.txHash} className="flex items-center justify-between gap-4 py-4">
           <div className="min-w-0">
-            <a href={addressUrl(a.merchant)} target="_blank" rel="noreferrer" className="font-mono text-[14px] hover:underline">
+            <Link href={`/m/${a.merchant}`} className="font-mono text-[14px] hover:underline">
               {short(a.merchant)}
-            </a>
+            </Link>
             <p className="text-[13px] text-ink-3">
               Fee <span className="font-mono">{usdc(BigInt(a.fee))}</span>, {a.holdbackBps / 100}% of sales
             </p>
