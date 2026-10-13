@@ -14,6 +14,7 @@ import { erc20Abi, poolAbi } from "@/lib/abi";
 import { addresses, isLive, monad } from "@/lib/chain";
 import { parseUsdc, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
+import { useViewAuth } from "@/lib/useViewAuth";
 
 /** Pool shares have 12 decimals (6 for USDC plus a 6 decimal offset), so 1 share is 1e12 units. */
 const ONE_SHARE = 10n ** 12n;
@@ -117,10 +118,13 @@ function Position({
       { address: addresses.pool!, abi: poolAbi, functionName: "maxWithdraw", args: [address] },
     ],
   });
+  const view = useViewAuth(address);
   const history = useQuery({
-    queryKey: ["lender", address],
+    queryKey: ["lender", address, view.authorized],
+    enabled: view.authorized,
     queryFn: async () => {
-      const r = await fetch(`/api/lender/${address}`, { cache: "no-store" });
+      const r = await fetch(`/api/lender/${address}`, { cache: "no-store", headers: view.headers });
+      if (r.status === 401) view.clear();
       if (!r.ok) throw new Error("rpc");
       return (await r.json()) as { deposited: string; withdrawn: string };
     },
@@ -187,6 +191,11 @@ function Position({
             {worth === undefined ? "..." : usdc(worth)}
             <span className="ml-1 font-sans text-[13px] tracking-normal text-ink-3">USDC</span>
           </p>
+          {!view.authorized && shares !== undefined && shares > 0n && (
+            <button type="button" onClick={view.authorize} disabled={view.signing} className="mt-1 text-[13px] text-primary-ink hover:underline disabled:text-ink-3">
+              {view.signing ? "Waiting for your signature..." : "Show earnings"}
+            </button>
+          )}
           {earned !== undefined && net !== undefined && net > 0n && (
             <p className="mt-1 text-[13px] text-ink-2">
               Earned <span className={`font-mono ${earned > 0n ? "text-positive" : "text-ink"}`}>{usdc(earned > 0n ? earned : 0n)}</span>

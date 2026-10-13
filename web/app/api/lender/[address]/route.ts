@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ownsAddress } from "@/lib/viewAuth.server";
 import { getAbiItem, getAddress, isAddress } from "viem";
 import { poolAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
@@ -9,9 +10,12 @@ import { fromIndexer, indexer } from "@/lib/indexer";
 export const dynamic = "force-dynamic";
 
 /** Net USDC a lender has put into the pool: deposits credited to them minus withdrawals from their shares. */
-export async function GET(_req: Request, { params }: { params: Promise<{ address: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ address: string }> }) {
   const { address } = await params;
   if (!isAddress(address)) return NextResponse.json({ error: "invalid_address" }, { status: 400 });
+  // Private: only the wallet itself can read its history, proven by a signed message.
+  if (!(await ownsAddress(req, address)))
+    return NextResponse.json({ error: "signature_required" }, { status: 401, headers: { "cache-control": "no-store" } });
   if (!isLive) return NextResponse.json({ error: "not_live" }, { status: 503 });
   const owner = getAddress(address);
   try {

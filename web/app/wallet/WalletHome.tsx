@@ -16,6 +16,7 @@ import {
   Fuel,
   HandCoins,
   Landmark,
+  Lock,
   PiggyBank,
   QrCode,
   Send,
@@ -30,6 +31,7 @@ import { erc20Abi, poolAbi } from "@/lib/abi";
 import { addressUrl, addresses, monad, txUrl } from "@/lib/chain";
 import { date, parseUsdc, short, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
+import { useViewAuth } from "@/lib/useViewAuth";
 
 type Item = {
   hash: string;
@@ -77,10 +79,14 @@ function Home({ address }: { address: Address }) {
     query: { enabled: !!addresses.pool && shares.data !== undefined },
   });
   const mon = useBalance({ address });
+  const view = useViewAuth(address);
   const history = useQuery({
-    queryKey: ["wallet-history", address],
+    queryKey: ["wallet-history", address, view.authorized],
+    enabled: view.authorized,
     queryFn: async () => {
-      const r = await fetch(`/api/wallet/${address}`, { cache: "no-store" });
+      const r = await fetch(`/api/wallet/${address}`, { cache: "no-store", headers: view.headers });
+      // An expired or rejected signature: forget it so the person can sign again.
+      if (r.status === 401) view.clear();
       if (!r.ok) throw new Error("history");
       return (await r.json()).items as Item[];
     },
@@ -189,7 +195,7 @@ function Home({ address }: { address: Address }) {
           )}
           <KeyExport address={address} />
         </div>
-        <History address={address} q={history} />
+        <History address={address} q={history} view={view} />
       </div>
     </div>
   );
@@ -509,7 +515,7 @@ const labels: Record<Item["kind"], { title: (c: string) => string; icon: Compone
   received: { title: (c) => `Received from ${c}`, icon: ArrowDownLeft },
 };
 
-function History({ address, q }: { address: Address; q: ReturnType<typeof useQuery<Item[]>> }) {
+function History({ address, q, view }: { address: Address; q: ReturnType<typeof useQuery<Item[]>>; view: ReturnType<typeof useViewAuth> }) {
   const [all, setAll] = useState(false);
   return (
     <section aria-labelledby="history-title" className={`${card} p-6`}>
@@ -521,7 +527,23 @@ function History({ address, q }: { address: Address; q: ReturnType<typeof useQue
           {q.isFetching ? "Updating..." : "Refresh"}
         </button>
       </div>
-      {q.isPending ? (
+      {!view.authorized ? (
+        <div className="mt-5 rounded-[14px] bg-surface p-5 text-[14px] leading-[1.55] text-ink-2">
+          <p className="flex items-center gap-2 text-[15px] font-[450] text-ink">
+            <Lock size={15} aria-hidden="true" /> Your activity is private
+          </p>
+          <p className="mt-1">Sign a quick message to show it. It proves the wallet is yours, costs nothing and moves no money.</p>
+          <button
+            type="button"
+            onClick={view.authorize}
+            disabled={view.signing}
+            className="mt-4 rounded-full bg-primary px-5 py-2.5 text-[14px] font-[450] text-white hover:bg-primary-ink disabled:opacity-60"
+          >
+            {view.signing ? "Waiting for your signature..." : "Show my activity"}
+          </button>
+          {view.failed && <p role="alert" className="mt-2 text-[13px] text-error">The signature was cancelled. Try again when you&apos;re ready.</p>}
+        </div>
+      ) : q.isPending ? (
         <ul className="mt-5 space-y-3" aria-label="Loading activity">
           {[0, 1, 2].map((i) => (
             <li key={i} className="h-14 animate-pulse rounded-[12px] bg-surface" />

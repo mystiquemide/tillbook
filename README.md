@@ -129,7 +129,7 @@ After signing in, `/wallet` works like a banking app:
 
 ### Privacy
 
-Tillbook doesn't publish pool size, lender balances or advance amounts on its pages. The advances list shows only each advance's number and whether it's repaid, and the API returns nothing more. Merchants choose to share their sales record through `/m/[address]`. Monad is a public chain, so the contracts' events can still be read on an explorer.
+Tillbook doesn't publish pool size, lender balances or advance amounts on its pages. The advances list shows only each advance's number and whether it's repaid, and the API returns nothing more. A wallet's activity and a lender's deposits are only served to that wallet, after it signs a free message proving it owns the address. Merchants choose to share their sales record through `/m/[address]`. Monad is a public chain, so the contracts' events can still be read on an explorer.
 
 ## Architecture
 

@@ -671,8 +671,8 @@ Offer(address merchant, uint256 amount, uint256 fee, uint16 holdbackBps, uint256
                   [<code key="1">GET /api/merchant/:address</code>, "Sales history, offer inputs and, when eligible, a signed offer"],
                   [<code key="2">GET /api/advances</code>, "Each advance's number and repaid status"],
                   [<code key="3">GET /api/stats</code>, "Counts of payments, merchants, advances and repaid advances"],
-                  [<code key="4">GET /api/wallet/:address</code>, "Labelled USDC activity since launch"],
-                  [<code key="5">GET /api/lender/:address</code>, "USDC a lender has deposited and withdrawn"],
+                  [<code key="4">GET /api/wallet/:address</code>, "Labelled USDC activity since launch. Owner only: needs a signature"],
+                  [<code key="5">GET /api/lender/:address</code>, "USDC a lender has deposited and withdrawn. Owner only: needs a signature"],
                 ]}
               />
             ),
@@ -682,6 +682,9 @@ Offer(address merchant, uint256 amount, uint256 fee, uint16 holdbackBps, uint256
             title: "Errors",
             body: (
               <p>
+                Owner-only endpoints need two headers, <code>x-tillbook-expires</code> (a Unix time at most 24 hours ahead) and{" "}
+                <code>x-tillbook-signature</code>, a signature over the message &ldquo;Tillbook: show my private activity&rdquo; with the
+                address and expiry. Without a valid signature from that address they return <code>401</code>.{" "}
                 Invalid addresses return <code>400</code> with <code>{"{ error: \"invalid_address\" }"}</code>. When Monad
                 can&apos;t be reached the response is <code>502</code> with <code>rpc_unavailable</code>.
               </p>
