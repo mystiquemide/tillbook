@@ -10,12 +10,9 @@ import { privyEnabled } from "@/lib/wagmi";
 import { HowLending, RiskNote } from "@/components/app/RiskNote";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
-import { CountUp } from "@/components/motion/CountUp";
-import { CircleDollarSign, HandCoins, TrendingUp, Wallet } from "lucide-react";
-import type { ComponentType } from "react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { erc20Abi, poolAbi } from "@/lib/abi";
-import { addressUrl, addresses, isLive, monad, txUrl } from "@/lib/chain";
+import { addresses, isLive, monad, txUrl } from "@/lib/chain";
 import { parseUsdc, short, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 
@@ -43,9 +40,7 @@ function Live() {
     contracts: [
       { address: addresses.pool!, abi: poolAbi, functionName: "totalAssets" },
       { address: addresses.pool!, abi: poolAbi, functionName: "idle" },
-      { address: addresses.pool!, abi: poolAbi, functionName: "principalOutstanding" },
       { address: addresses.pool!, abi: poolAbi, functionName: "convertToAssets", args: [ONE_SHARE] },
-      { address: addresses.pool!, abi: poolAbi, functionName: "maxAdvance" },
     ],
   });
   const advances = useQuery({
@@ -57,7 +52,7 @@ function Live() {
     },
   });
 
-  const [total, idle, out, price, cap] = (pool.data ?? []).map((d) => d.result as bigint | undefined);
+  const [total, idle, price] = (pool.data ?? []).map((d) => d.result as bigint | undefined);
   const refreshPool = () => Promise.all([pool.refetch(), advances.refetch()]);
 
   return (
@@ -67,39 +62,13 @@ function Live() {
         description="Deposit USDC. Merchants draw advances from it and repay them from their sales. The fee on each advance goes to lenders as it's repaid."
       />
 
-      <section aria-label="Pool">
-        {pool.isError ? (
-          <Notice title="Can't reach Monad right now." tone="error">
-            <button type="button" onClick={() => pool.refetch()} className="mt-2 rounded-full bg-ink px-4 py-2 text-[14px] text-white">
-              Try again
-            </button>
-          </Notice>
-        ) : (
-          <dl className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-            <Stat icon={Wallet} label="Total pool assets" value={total} />
-            <Stat icon={CircleDollarSign} label="Available liquidity" value={idle} />
-            <Stat icon={HandCoins} label="Outstanding advances" value={out} />
-            <Stat icon={TrendingUp} label="Realized return since launch" value={price} percent />
-          </dl>
-        )}
-        {total === 0n && (
-          <p className="mt-4 rounded-[14px] bg-primary-tint px-4 py-3 text-[14px] leading-[1.55] text-primary-ink">
-            The pool is new and has no deposits yet. The first deposit is what lets the first merchant draw an advance.
-          </p>
-        )}
-        <p className="mt-3 text-[13px] text-ink-3">
-          Live from{" "}
-          <a href={addressUrl(addresses.pool!)} target="_blank" rel="noreferrer" className="font-mono hover:underline">
-            LenderPool {short(addresses.pool!)}
-          </a>
-          {cap !== undefined && (
-            <>
-              . Each advance is capped onchain at <span className="font-mono">{usdc(cap)}</span> USDC
-            </>
-          )}
-          . Return is the change in value of one pool share since launch, from fees merchants have actually repaid.
-        </p>
-      </section>
+      {pool.isError && (
+        <Notice title="Can't reach Monad right now." tone="error">
+          <button type="button" onClick={() => pool.refetch()} className="mt-2 rounded-full bg-ink px-4 py-2 text-[14px] text-white">
+            Try again
+          </button>
+        </Notice>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
         <section aria-labelledby="advances-title" className="order-last min-w-0 lg:order-none">
@@ -131,44 +100,6 @@ function Live() {
   );
 }
 
-function Stat({
-  icon: Icon,
-  label,
-  value,
-  percent = false,
-}: {
-  icon: ComponentType<{ size?: number; strokeWidth?: number }>;
-  label: string;
-  value: bigint | undefined;
-  percent?: boolean;
-}) {
-  return (
-    <div className={`${card} p-5`}>
-      <dt className="flex items-center gap-2 text-[13px] text-ink-2">
-        <span className="grid h-7 w-7 place-items-center rounded-[8px] bg-primary-tint text-primary-ink" aria-hidden="true">
-          <Icon size={15} strokeWidth={2} />
-        </span>
-        {label}
-      </dt>
-      <dd className="mt-4 font-mono text-[22px] tracking-[-0.01em] tabular-nums md:text-[28px]">
-        {value === undefined ? (
-          <span className="text-[15px] text-ink-3">Reading...</span>
-        ) : percent ? (
-          // value is what 1 share (bought at 1.000000 USDC at launch) is worth now
-          <CountUp
-            value={(Number(value) - 1e6) / 1e4}
-            format={(n) => `${value >= 1_000_000n ? "+" : ""}${n.toFixed(2)}%`}
-          />
-        ) : (
-          <>
-            <CountUp value={Number(value) / 1e6} format={(n) => usdc(BigInt(Math.round(n * 1e6)))} />
-            <span className="ml-1.5 font-sans text-[14px] tracking-normal text-ink-3">USDC</span>
-          </>
-        )}
-      </dd>
-    </div>
-  );
-}
 
 function Position({
   address,
