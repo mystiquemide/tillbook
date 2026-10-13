@@ -1,0 +1,18 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+version: 1
+site:
+  title: Tillbook
+  structure:
+    - type: space
+      key: space-tillbook
+      title: Tillbook
+      path: tillbook
+      default: true
+      content:
+        directory: ./
+    - type: space
+      key: space-indexer
+      title: Indexer
+      path: indexer
+      content:
+        directory: ./indexer
