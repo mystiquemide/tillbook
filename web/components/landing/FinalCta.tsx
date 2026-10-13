@@ -1,9 +1,10 @@
 import { ButtonLink } from "../Button";
+import { Reveal } from "../motion/Reveal";
 
 export function FinalCta() {
   return (
     <section aria-labelledby="cta-title" className="px-3 md:px-6">
-      <div className="mx-auto flex max-w-[1392px] flex-col items-center rounded-[32px] bg-surface px-6 py-16 text-center md:py-24">
+      <Reveal className="mx-auto flex max-w-[1392px] flex-col items-center rounded-[32px] bg-surface px-6 py-16 text-center md:py-24">
         <h2 id="cta-title" className="max-w-[720px] text-[40px] leading-[1.08] font-[550] tracking-[-0.05em] text-balance md:text-[64px]">
           Start building your record today.
         </h2>
@@ -16,7 +17,7 @@ export function FinalCta() {
             Lend USDC
           </ButtonLink>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

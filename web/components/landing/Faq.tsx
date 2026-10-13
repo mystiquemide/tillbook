@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { Reveal } from "../motion/Reveal";
 
 const faqs = [
   {
@@ -30,7 +31,7 @@ const faqs = [
 export function Faq() {
   return (
     <section id="faq" aria-labelledby="faq-title" className="scroll-mt-20 px-6 py-20 md:py-28">
-      <div className="mx-auto max-w-[760px]">
+      <Reveal className="mx-auto max-w-[760px]">
         <h2 id="faq-title" className="text-center text-[40px] leading-[1.08] font-[550] tracking-[-0.05em] md:text-[56px]">
           Questions
         </h2>
@@ -45,7 +46,7 @@ export function Faq() {
             </details>
           ))}
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

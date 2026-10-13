@@ -2,6 +2,7 @@ import { CircleGauge, FlaskConical, KeyRound, Landmark, ShieldCheck, Zap } from 
 import type { ComponentType } from "react";
 import { ButtonLink } from "../Button";
 import { links } from "@/lib/links";
+import { Reveal } from "../motion/Reveal";
 
 const src = (path: string) => `${links.repo}/blob/main/${path}`;
 
@@ -50,7 +51,7 @@ export function Trust() {
   return (
     <section id="trust" aria-labelledby="trust-title" className="scroll-mt-20 px-3 pt-6 md:px-6">
       <div className="mx-auto max-w-[1392px] rounded-[32px] bg-[#f3f1ff] px-6 py-16 md:py-24">
-        <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+        <Reveal className="mx-auto flex max-w-[720px] flex-col items-center text-center">
           <h2 id="trust-title" className="text-[40px] leading-[1.08] font-[550] tracking-[-0.05em] md:text-[72px] md:leading-[1.1]">
             Trusted by default
           </h2>
@@ -62,15 +63,15 @@ export function Trust() {
               Read the code
             </ButtonLink>
           </div>
-        </div>
+        </Reveal>
         <ul className="mx-auto mt-14 grid max-w-[960px] gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {facts.map(({ icon: Icon, value, label, href }) => (
-            <li key={value}>
+          {facts.map(({ icon: Icon, value, label, href }, i) => (
+            <Reveal as="li" key={value} delay={(i % 3) * 90}>
               <a
                 href={href}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-full flex-col rounded-[16px] border border-hairline bg-white p-6 transition-colors hover:border-[#d6d0ff]"
+                className="flex h-full flex-col rounded-[16px] border border-hairline bg-white p-6 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-[#d6d0ff] hover:shadow-[0_14px_30px_-18px_rgba(90,63,245,0.35)]"
               >
                 <span className="text-primary">
                   <Icon size={22} strokeWidth={1.75} />
@@ -78,7 +79,7 @@ export function Trust() {
                 <span className="mt-5 text-[22px] font-[450] tracking-[-0.02em]">{value}</span>
                 <span className="mt-2 text-[14px] leading-[1.55] text-ink-2">{label}</span>
               </a>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>

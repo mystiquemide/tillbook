@@ -20,7 +20,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Marks the page before first paint so entrance motion never flashes content in and out. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js-motion')" }} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SkipLink />
         <Providers>{children}</Providers>
