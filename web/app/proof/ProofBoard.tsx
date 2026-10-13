@@ -273,7 +273,7 @@ function CopyPill({ value }: { value: string }) {
 }
 
 type Advance = { n: number; repaid: boolean };
-type Stats = { payments: number; volume: string; merchants: number; advances: number; repaid: number };
+type Stats = { payments: number; merchants: number; advances: number; repaid: number };
 
 function Activity() {
   const stats = useQuery({
