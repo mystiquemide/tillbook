@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { links } from "@/lib/links";
+import { sectionBySlug } from "@/lib/sections";
+import { SectionLink } from "./landing/SectionLink";
+import type { ComponentProps } from "react";
+
+function AnyLink({ href, ...props }: { href: string } & Omit<ComponentProps<typeof Link>, "href">) {
+  const slug = href.slice(1);
+  return sectionBySlug(slug) ? <SectionLink slug={slug} {...props} /> : <Link href={href} {...props} />;
+}
 
 const columns = [
   {
@@ -8,8 +16,9 @@ const columns = [
     items: [
       { label: "For merchants", href: "/merchant" },
       { label: "For lenders", href: "/lend" },
-      { label: "Live stats", href: "/#network" },
-      { label: "Trust", href: "/#trust" },
+      { label: "Live stats", href: "/stats" },
+      { label: "Trust", href: "/trust" },
+      { label: "FAQ", href: "/faq" },
     ],
   },
   {
@@ -41,13 +50,13 @@ export function Footer() {
                 const external = i.href.startsWith("http");
                 return (
                   <li key={i.label}>
-                    <Link
+                    <AnyLink
                       href={i.href}
                       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
                       className="text-[14px] text-ink-2 transition-colors hover:text-ink"
                     >
                       {i.label}
-                    </Link>
+                    </AnyLink>
                   </li>
                 );
               })}

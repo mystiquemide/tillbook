@@ -5,14 +5,9 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { ButtonLink } from "./Button";
 import { WalletButton } from "./app/WalletButton";
+import { SectionLink } from "./landing/SectionLink";
+import { sections } from "@/lib/sections";
 
-const sections = [
-  { href: "/#merchants", label: "Merchants" },
-  { href: "/#network", label: "Live stats" },
-  { href: "/#lenders", label: "Lenders" },
-  { href: "/#trust", label: "Trust" },
-  { href: "/#faq", label: "FAQ" },
-];
 
 const tabs = [
   { href: "/merchant", label: "Merchant" },
@@ -52,9 +47,9 @@ export function SiteHeader({ variant }: { variant: "landing" | "app" | "checkout
         {variant === "landing" && (
           <nav aria-label="Sections" className="hidden items-center gap-8 md:flex">
             {sections.map((s) => (
-              <Link key={s.href} href={s.href} className="py-3 text-[14px] text-ink-2 transition-colors hover:text-ink">
+              <SectionLink key={s.slug} slug={s.slug} className="py-3 text-[14px] text-ink-2 transition-colors hover:text-ink">
                 {s.label}
-              </Link>
+              </SectionLink>
             ))}
           </nav>
         )}

@@ -1,3 +1,4 @@
+import { SkipLink } from "@/components/SkipLink";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -20,12 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <a
-          href="#main"
-          className="sr-only z-50 rounded-full bg-ink px-4 py-2 text-[14px] text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
-        >
-          Skip to content
-        </a>
+        <SkipLink />
         <Providers>{children}</Providers>
       </body>
     </html>

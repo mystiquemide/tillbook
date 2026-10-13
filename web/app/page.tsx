@@ -1,25 +1,5 @@
-import { SiteHeader } from "@/components/SiteHeader";
-import { Footer } from "@/components/Footer";
-import { Hero } from "@/components/landing/Hero";
-import { PoolStrip } from "@/components/landing/PoolStrip";
-import { LenderBand } from "@/components/landing/LenderBand";
-import { Trust } from "@/components/landing/Trust";
-import { Faq } from "@/components/landing/Faq";
-import { FinalCta } from "@/components/landing/FinalCta";
+import { Landing } from "@/components/landing/Landing";
 
 export default function Home() {
-  return (
-    <>
-      <SiteHeader variant="landing" />
-      <main id="main">
-        <Hero />
-        <PoolStrip />
-        <LenderBand />
-        <Trust />
-        <Faq />
-        <FinalCta />
-      </main>
-      <Footer />
-    </>
-  );
+  return <Landing />;
 }
