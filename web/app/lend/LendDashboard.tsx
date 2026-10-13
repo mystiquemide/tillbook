@@ -5,7 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useReadContracts } from "wagmi";
-import { NotLive, Notice } from "@/components/app/Notice";
+import { NotLive, Notice, card } from "@/components/app/Notice";
+import { ConnectPrompt } from "@/components/app/ConnectPrompt";
+import { PageHeader } from "@/components/app/PageHeader";
+import { CountUp } from "@/components/motion/CountUp";
+import { CircleDollarSign, HandCoins, Landmark, TrendingUp, Wallet } from "lucide-react";
+import type { ComponentType } from "react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { erc20Abi, poolAbi } from "@/lib/abi";
 import { addressUrl, addresses, isLive, monad, txUrl } from "@/lib/chain";
@@ -55,13 +60,12 @@ function Live() {
 
   return (
     <div className="space-y-12">
-      <div>
-        <h1 className="text-[40px] leading-[1.2] font-[500] tracking-[-0.03em]">Lend</h1>
-        <p className="mt-2 max-w-[640px] text-[16px] leading-[1.6] text-ink-2">
-          Deposit USDC. Merchants draw advances from it and repay them from their sales. The fee on each advance goes to
-          lenders as it&apos;s repaid.
-        </p>
-      </div>
+      <PageHeader
+        icon={Landmark}
+        eyebrow="Lender pool"
+        title="Lend against real sales"
+        description="Deposit USDC. Merchants draw advances from it and repay them from their sales. The fee on each advance goes to lenders as it's repaid."
+      />
 
       <section aria-label="Pool">
         {pool.isError ? (
@@ -71,11 +75,11 @@ function Live() {
             </button>
           </Notice>
         ) : (
-          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[16px] border border-hairline bg-hairline md:grid-cols-4">
-            <Stat label="Total in pool" value={total} />
-            <Stat label="Free to lend or withdraw" value={idle} />
-            <Stat label="Lent to merchants" value={out} />
-            <Stat label="Return since launch" value={price} percent />
+          <dl className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            <Stat icon={Wallet} label="Total in pool" value={total} />
+            <Stat icon={CircleDollarSign} label="Free to lend or withdraw" value={idle} />
+            <Stat icon={HandCoins} label="Lent to merchants" value={out} />
+            <Stat icon={TrendingUp} label="Return since launch" value={price} percent />
           </dl>
         )}
         <p className="mt-3 text-[13px] text-ink-3">
@@ -101,7 +105,11 @@ function Live() {
         </section>
         <aside aria-label="Your position" className="min-w-0 space-y-6">
           {!isConnected || !address ? (
-            <Notice title="Connect a wallet to deposit.">Pool numbers above are public and read from Monad.</Notice>
+            <ConnectPrompt
+              compact
+              title="Connect to deposit"
+              body="Pool numbers are public. Connect a wallet with USDC on Monad to deposit, track your share and withdraw."
+            />
           ) : chainId !== monad.id ? (
             <Notice title="Your wallet is on another network." tone="warning">
               Switch to Monad with the button at the top right.
@@ -115,18 +123,36 @@ function Live() {
   );
 }
 
-function Stat({ label, value, percent = false }: { label: string; value: bigint | undefined; percent?: boolean }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  percent = false,
+}: {
+  icon: ComponentType<{ size?: number; strokeWidth?: number }>;
+  label: string;
+  value: bigint | undefined;
+  percent?: boolean;
+}) {
   return (
-    <div className="bg-white p-5">
-      <dt className="text-[13px] text-ink-2">{label}</dt>
-      <dd className="mt-2 font-mono text-[22px] tracking-[-0.01em] md:text-[26px]">
+    <div className={`${card} p-5`}>
+      <dt className="flex items-center gap-2 text-[13px] text-ink-2">
+        <span className="grid h-7 w-7 place-items-center rounded-[8px] bg-primary-tint text-primary-ink" aria-hidden="true">
+          <Icon size={15} strokeWidth={2} />
+        </span>
+        {label}
+      </dt>
+      <dd className="mt-4 font-mono text-[22px] tracking-[-0.01em] tabular-nums md:text-[28px]">
         {value === undefined ? (
           <span className="text-[15px] text-ink-3">Reading...</span>
         ) : percent ? (
           // value is what 1 share (bought at 1.000000 USDC at launch) is worth now
-          `${value >= 1_000_000n ? "+" : ""}${((Number(value) - 1e6) / 1e4).toFixed(2)}%`
+          <CountUp
+            value={(Number(value) - 1e6) / 1e4}
+            format={(n) => `${value >= 1_000_000n ? "+" : ""}${n.toFixed(2)}%`}
+          />
         ) : (
-          usdc(value)
+          <CountUp value={Number(value) / 1e6} format={(n) => usdc(BigInt(Math.round(n * 1e6)))} />
         )}
       </dd>
     </div>
@@ -201,7 +227,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
 
   return (
     <>
-      <div className="rounded-[16px] border border-hairline bg-white p-6">
+      <div className={`${card} p-6`}>
         <p className="text-[14px] text-ink-2">Your deposit is worth</p>
         <p className="mt-1 font-mono text-[36px] leading-[1.1] tracking-[-0.02em]">{worth === undefined ? "..." : usdc(worth)}</p>
         <p className="mt-1 text-[14px] text-ink-2">
@@ -215,7 +241,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
         </p>
       </div>
 
-      <div className="rounded-[16px] border border-hairline bg-white p-6">
+      <div className={`${card} p-6`}>
         <div role="tablist" aria-label="Action" className="mb-5 grid grid-cols-2 rounded-full bg-surface p-1 ring-1 ring-hairline">
           {(["deposit", "withdraw"] as const).map((m) => (
             <button
@@ -294,7 +320,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
 }
 
 function Advances({ query }: { query: ReturnType<typeof useQuery<Advance[]>> }) {
-  if (query.isLoading) return <p className="text-[15px] text-ink-2">Reading from Monad...</p>;
+  if (query.isLoading) return <p className={`${card} p-6 text-[15px] text-ink-2`}>Reading from Monad...</p>;
   if (query.isError)
     return (
       <Notice title="Can't load advances right now." tone="error">
@@ -306,7 +332,7 @@ function Advances({ query }: { query: ReturnType<typeof useQuery<Advance[]>> }) 
   const rows = query.data ?? [];
   if (rows.length === 0) return <Notice title="No advances yet.">When a merchant draws from the pool it shows up here.</Notice>;
   return (
-    <ul className="divide-y divide-hairline border-y border-hairline">
+    <ul className={`${card} divide-y divide-hairline px-5 md:px-6`}>
       {rows.map((a) => (
         <li key={a.txHash} className="flex items-center justify-between gap-4 py-4">
           <div className="min-w-0">

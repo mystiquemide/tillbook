@@ -8,6 +8,8 @@ import { erc20Abi, routerAbi } from "@/lib/abi";
 import { addressUrl, addresses, monad } from "@/lib/chain";
 import { parseUsdc, short, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
+import { card } from "@/components/app/Notice";
+import { ShieldCheck } from "lucide-react";
 
 const primary =
   "h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-surface disabled:text-ink-2 disabled:ring-1 disabled:ring-hairline";
@@ -83,11 +85,23 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
   }
 
   return (
-    <div className="rounded-[24px] border border-hairline bg-white p-6 md:p-8">
-      <h1 className="text-[14px] font-[400] text-ink-2">Pay this merchant</h1>
-      <a href={addressUrl(merchant)} target="_blank" rel="noreferrer" className="mt-1 block font-mono text-[18px] hover:underline">
-        {short(merchant)}
-      </a>
+    <div className="rise">
+    <div className={`${card} p-6 md:p-8`}>
+      <div className="flex items-center gap-4">
+        <span
+          aria-hidden="true"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] font-mono text-[15px] text-white"
+          style={{ background: `hsl(${parseInt(merchant.slice(2, 6), 16) % 360} 62% 52%)` }}
+        >
+          {merchant.slice(2, 4).toUpperCase()}
+        </span>
+        <div className="min-w-0">
+          <h1 className="text-[14px] font-[400] text-ink-2">Pay this merchant</h1>
+          <a href={addressUrl(merchant)} target="_blank" rel="noreferrer" className="block font-mono text-[18px] hover:underline">
+            {short(merchant)}
+          </a>
+        </div>
+      </div>
 
       <label htmlFor="amount" className="mt-8 block text-[13px] text-ink-2">
         Amount in USDC
@@ -148,6 +162,11 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
       </div>
       <p className="mt-6 text-[13px] leading-[1.6] text-ink-3">
         Paid in USDC on Monad through the Tillbook payment contract. Your wallet also pays a small Monad network fee in MON.
+      </p>
+    </div>
+      <p className="mt-4 flex items-center justify-center gap-2 text-[13px] text-ink-3">
+        <ShieldCheck size={14} aria-hidden="true" />
+        Tillbook never holds your money. It goes straight to the merchant.
       </p>
     </div>
   );

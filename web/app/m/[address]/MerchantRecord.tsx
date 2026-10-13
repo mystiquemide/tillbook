@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useReadContracts } from "wagmi";
 import { Notice } from "@/components/app/Notice";
+import { PageHeader } from "@/components/app/PageHeader";
+import { ScrollText } from "lucide-react";
 import { Breakdown, Ledger, Panel, Reading } from "@/app/merchant/MerchantDashboard";
 import { poolAbi } from "@/lib/abi";
 import { addressUrl, addresses } from "@/lib/chain";
@@ -32,25 +34,29 @@ export function MerchantRecord({ address }: { address: `0x${string}` }) {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-[40px] leading-[1.2] font-[500] tracking-[-0.03em]">Merchant record</h1>
+      <PageHeader
+        icon={ScrollText}
+        eyebrow="Public record"
+        title="Merchant record"
+        description={
           <a
             href={addressUrl(address)}
             target="_blank"
             rel="noreferrer"
-            className="mt-2 block font-mono text-[14px] break-all text-ink-2 hover:text-ink hover:underline"
+            className="font-mono text-[14px] break-all hover:text-ink hover:underline"
           >
             {address}
           </a>
-        </div>
-        <Link
-          href={`/pay/${address}`}
-          className="inline-flex h-10 items-center rounded-full bg-primary px-5 text-[15px] font-[450] text-white hover:bg-primary-ink"
-        >
-          Pay this merchant
-        </Link>
-      </div>
+        }
+        actions={
+          <Link
+            href={`/pay/${address}`}
+            className="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[15px] font-[450] text-white hover:bg-primary-ink"
+          >
+            Pay this merchant
+          </Link>
+        }
+      />
 
       {failed ? (
         <Notice title="Can't reach Monad right now." tone="error">

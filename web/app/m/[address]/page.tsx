@@ -24,7 +24,8 @@ export default async function MerchantRecordPage({ params }: Props) {
   return (
     <>
       <SiteHeader variant="app" />
-      <main id="main" className="mx-auto max-w-[1200px] px-4 py-12 md:px-6">
+      <main id="main" className="min-h-[calc(100dvh-65px)] bg-surface">
+        <div className="mx-auto max-w-[1200px] px-4 py-10 md:px-6 md:py-14">
         {!isLive ? (
           <NotLive />
         ) : !valid ? (
@@ -37,6 +38,7 @@ export default async function MerchantRecordPage({ params }: Props) {
         ) : (
           <MerchantRecord address={getAddress(address)} />
         )}
+        </div>
       </main>
     </>
   );

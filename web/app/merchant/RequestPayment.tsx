@@ -3,6 +3,7 @@
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { parseUsdc } from "@/lib/format";
+import { card } from "@/components/app/Notice";
 
 /** Builds a payment link, optionally with a set amount, and a QR code customers can scan at the counter. */
 export function RequestPayment({ address }: { address: `0x${string}` }) {
@@ -24,7 +25,7 @@ export function RequestPayment({ address }: { address: `0x${string}` }) {
   }, [url, origin]);
 
   return (
-    <div className="rounded-[16px] border border-hairline bg-white p-6">
+    <div className={`${card} p-6`}>
       <h2 className="text-[17px] font-[450]">Request a payment</h2>
       <p className="mt-1 text-[14px] leading-[1.5] text-ink-2">
         Customers scan this or open the link to pay you in USDC. Leave the amount empty to let them enter it.

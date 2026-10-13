@@ -5,7 +5,10 @@ import Link from "next/link";
 import { formatUnits } from "viem";
 import { useEffect, useState } from "react";
 import { useAccount, useReadContracts } from "wagmi";
-import { NotLive, Notice } from "@/components/app/Notice";
+import { ConnectPrompt } from "@/components/app/ConnectPrompt";
+import { NotLive, Notice, card } from "@/components/app/Notice";
+import { PageHeader } from "@/components/app/PageHeader";
+import { Store } from "lucide-react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { poolAbi } from "@/lib/abi";
 import { addresses, isLive, monad, txUrl } from "@/lib/chain";
@@ -21,9 +24,15 @@ export function MerchantDashboard() {
   if (!isConnected || !address)
     return (
       <Intro>
-        <Notice title="Connect the wallet you get paid to.">
-          Your ledger and your offer are read from Monad for that address. Use the button at the top right.
-        </Notice>
+        <ConnectPrompt
+          title="Connect the wallet you get paid to"
+          body="Your ledger, your offer and your payment link all come from that address on Monad."
+          points={[
+            "Every sale paid to you through Tillbook, with its transaction",
+            "Your advance offer, and exactly how it's worked out",
+            "A payment link and QR code for your counter",
+          ]}
+        />
       </Intro>
     );
   if (chainId !== monad.id)
@@ -46,12 +55,15 @@ function Intro({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Heading() {
+function Heading({ actions }: { actions?: React.ReactNode }) {
   return (
-    <div>
-      <h1 className="text-[40px] leading-[1.2] font-[500] tracking-[-0.03em]">Your ledger</h1>
-      <p className="mt-2 text-[16px] text-ink-2">Every sale paid through Tillbook, straight from Monad.</p>
-    </div>
+    <PageHeader
+      icon={Store}
+      eyebrow="Merchant"
+      title="Your ledger"
+      description="Every sale paid through Tillbook, straight from Monad."
+      actions={actions}
+    />
   );
 }
 
@@ -75,15 +87,16 @@ function Connected({ address }: { address: `0x${string}` }) {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <Heading />
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href={`/m/${address}`} className="text-[15px] text-primary-ink hover:underline">
-            Public record
-          </Link>
-          <PayLink address={address} />
-        </div>
-      </div>
+      <Heading
+        actions={
+          <>
+            <Link href={`/m/${address}`} className="text-[15px] text-primary-ink hover:underline">
+              Public record
+            </Link>
+            <PayLink address={address} />
+          </>
+        }
+      />
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <section aria-labelledby="ledger-title" className="min-w-0">
           <h2 id="ledger-title" className="sr-only">
@@ -162,7 +175,7 @@ export function Ledger({ query, empty }: { query: ReturnType<typeof useQuery<Mer
 
   const payments = showAll ? all : all.slice(0, PAGE);
   return (
-    <div>
+    <div className={`${card} px-5 pt-2 pb-4 md:px-6`}>
       <ul className="divide-y divide-hairline border-y border-hairline sm:hidden">
         {payments.map((p) => (
           <li key={p.txHash + p.payer + p.amount} className="flex items-center justify-between gap-4 py-3">
@@ -376,7 +389,7 @@ export function Breakdown({ inputs }: { inputs: ApiInputs }) {
 }
 
 export function Panel({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-[16px] border border-hairline bg-white p-6">{children}</div>;
+  return <div className={`${card} p-6`}>{children}</div>;
 }
 
 function useNow() {

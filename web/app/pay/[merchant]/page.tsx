@@ -28,7 +28,8 @@ export default async function PayPage({
   return (
     <>
       <SiteHeader variant="checkout" />
-      <main id="main" className="mx-auto max-w-[480px] px-4 py-12 md:py-16">
+      <main id="main" className="min-h-[calc(100dvh-65px)] bg-surface">
+        <div className="mx-auto max-w-[480px] px-4 py-12 md:py-16">
         {!isLive ? (
           <NotLive />
         ) : !valid ? (
@@ -41,6 +42,7 @@ export default async function PayPage({
         ) : (
           <Checkout merchant={getAddress(merchant)} requested={requested} />
         )}
+        </div>
       </main>
     </>
   );
