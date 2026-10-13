@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Page not found | Tillbook" };
 export default function NotFound() {
   return (
     <>
-      <SiteHeader variant="app" />
+      <SiteHeader variant="app" wallet={false} />
       <main id="main" className="mx-auto flex max-w-[560px] flex-col items-center px-6 py-24 text-center">
         <p className="font-mono text-[14px] text-ink-3">404</p>
         <h1 className="mt-3 text-[40px] leading-[1.15] font-[500] tracking-[-0.03em]">This page doesn&apos;t exist.</h1>

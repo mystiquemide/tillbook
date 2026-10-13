@@ -4,7 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { ButtonLink } from "./Button";
-import { WalletButton } from "./app/WalletButton";
+import dynamic from "next/dynamic";
+
+// Wallet code loads only where a wallet button is shown, never on marketing pages.
+const WalletButton = dynamic(() => import("./app/WalletButton").then((m) => m.WalletButton), {
+  ssr: false,
+  loading: () => <span className="inline-block h-9 w-24 rounded-full bg-surface" aria-hidden="true" />,
+});
 import { SectionLink } from "./landing/SectionLink";
 import { sections } from "@/lib/sections";
 
@@ -15,7 +21,7 @@ const tabs = [
 ];
 
 /** One header for every page, so height, width and alignment never shift between routes. */
-export function SiteHeader({ variant }: { variant: "landing" | "app" | "checkout" }) {
+export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "app" | "checkout"; wallet?: boolean }) {
   const path = usePathname();
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-white/95 backdrop-blur-sm">
@@ -61,7 +67,7 @@ export function SiteHeader({ variant }: { variant: "landing" | "app" | "checkout
           </nav>
         )}
         <div className="flex shrink-0 items-center">
-          {variant === "landing" ? (
+          {variant === "landing" || !wallet ? (
             <ButtonLink href="/merchant" variant="dark" size="sm" className="h-9 px-4">
               Open app
             </ButtonLink>

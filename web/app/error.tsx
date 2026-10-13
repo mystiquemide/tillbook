@@ -11,7 +11,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
   return (
     <>
-      <SiteHeader variant="app" />
+      <SiteHeader variant="app" wallet={false} />
       <main id="main" className="mx-auto flex max-w-[560px] flex-col items-center px-6 py-24 text-center">
         <h1 className="text-[40px] leading-[1.15] font-[500] tracking-[-0.03em]">Something broke on our side.</h1>
         <p className="mt-4 text-[16px] leading-[1.6] text-ink-2">
