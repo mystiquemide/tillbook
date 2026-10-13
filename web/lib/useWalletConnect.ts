@@ -20,12 +20,17 @@ function usePrivyConnect(): WalletConnect {
   const [failed, setFailed] = useState(false);
   const { login } = useLogin({ onError: (e) => setFailed(e !== "exited_auth_flow") });
   const { logout } = useLogout();
+  const { disconnectAsync } = useDisconnect();
   return {
     connect: () => {
       setFailed(false);
       login();
     },
-    disconnect: () => void logout(),
+    // Privy ends the session, but wagmi keeps its cached account until reload, so clear both and reset the page.
+    disconnect: () =>
+      void logout()
+        .then(() => disconnectAsync().catch(() => {}))
+        .finally(() => window.location.reload()),
     isPending: !ready,
     failed,
     available: true,

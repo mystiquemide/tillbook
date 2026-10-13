@@ -58,6 +58,7 @@ export function WalletButton() {
 function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () => void }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -118,13 +119,15 @@ function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () =>
             type="button"
             role="menuitem"
             className={`${base} text-error hover:bg-[rgba(194,65,12,0.06)]`}
+            disabled={signingOut}
             onClick={() => {
-              setOpen(false);
+              setSigningOut(true);
               onSignOut();
+              if (!privyEnabled) setOpen(false);
             }}
           >
             <LogOut size={16} aria-hidden="true" />
-            {privyEnabled ? "Sign out" : "Disconnect"}
+            {signingOut ? "Signing out..." : privyEnabled ? "Sign out" : "Disconnect"}
           </button>
         </div>
       )}
