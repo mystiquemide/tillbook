@@ -11,6 +11,7 @@ const sections = [
   { href: "/#network", label: "Live stats" },
   { href: "/#lenders", label: "Lenders" },
   { href: "/#trust", label: "Trust" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 const tabs = [

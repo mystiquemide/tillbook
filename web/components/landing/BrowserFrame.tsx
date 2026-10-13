@@ -11,7 +11,7 @@ export function BrowserFrame({ src, alt, path, dark = false }: { src: string; al
         <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
         <span
-          className={`mx-auto rounded-md px-3 py-0.5 font-mono text-[11px] ${dark ? "bg-white/5 text-white/50" : "bg-white text-ink-3"}`}
+          className={`mx-auto rounded-md px-3 py-0.5 font-mono text-[12px] ${dark ? "bg-white/5 text-white/50" : "bg-white text-ink-3"}`}
         >
           tillbook / {path}
         </span>
