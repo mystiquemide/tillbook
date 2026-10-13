@@ -64,7 +64,7 @@ function Heading({ actions }: { actions?: React.ReactNode }) {
   return (
     <PageHeader
       title="Your ledger"
-      description="Every sale paid through Tillbook, straight from Monad."
+      description="Every sale paid through Tillbook, straight from Monad. Your public record shows the same sales, repayments and transactions to any lender."
       actions={actions}
     />
   );
@@ -86,6 +86,7 @@ function Connected({ address }: { address: `0x${string}` }) {
   const tx = useTx();
 
   const advance = chain.data?.[0]?.result;
+  const isNew = data.data !== undefined && data.data.payments.length === 0;
   const repaidCount = chain.data?.[1]?.result;
 
   return (
@@ -101,13 +102,25 @@ function Connected({ address }: { address: `0x${string}` }) {
         }
       />
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-        <section aria-labelledby="ledger-title" className="min-w-0">
+        <section aria-labelledby="ledger-title" className="min-w-0 space-y-6">
+          {/* A new merchant's first job is getting paid, so the payment request leads until there are sales. */}
+          {isNew && <RequestPayment address={address} />}
           <h2 id="ledger-title" className="sr-only">
             Sales ledger
           </h2>
-          <Ledger query={data} />
+          <Ledger
+            query={data}
+            empty={
+              <Notice title="No sales yet.">
+                Share your payment link to start your record. Every sale you take through it shows up here.
+                <div className="mt-4">
+                  <PayLink address={address} />
+                </div>
+              </Notice>
+            }
+          />
         </section>
-        <aside aria-label="Advance" className="order-first min-w-0 lg:order-none">
+        <aside aria-label="Advance" className={`min-w-0 ${isNew ? "" : "order-first lg:order-none"}`}>
           {data.isError || chain.isError ? (
             <Notice title="Can't reach Monad right now." tone="error">
               <button type="button" onClick={refresh} className="mt-2 rounded-full bg-ink px-4 py-2 text-[14px] text-white">
@@ -124,9 +137,11 @@ function Connected({ address }: { address: `0x${string}` }) {
           <div className="mt-3">
             <TxStatus state={tx.state} />
           </div>
-          <div className="mt-6">
-            <RequestPayment address={address} />
-          </div>
+          {!isNew && (
+            <div className="mt-6">
+              <RequestPayment address={address} />
+            </div>
+          )}
         </aside>
       </div>
     </div>
@@ -395,6 +410,17 @@ export function Breakdown({ inputs }: { inputs: ApiInputs }) {
       <p className="mt-3 text-[13px] leading-[1.5] text-ink-3">
         Offer is 50% of counted sales, times the repayment boost, up to 5,000 USDC.
       </p>
+      <details className="group mt-3 text-[13px] leading-[1.55] text-ink-2">
+        <summary className="cursor-pointer text-primary-ink [&::-webkit-details-marker]:hidden">
+          <span className="group-open:hidden">See an example</span>
+          <span className="hidden group-open:inline">Hide example</span>
+        </summary>
+        <p className="mt-2">
+          You take 1,000 USDC from five customers, 200 USDC each. No customer is over the 20% limit, so all 1,000 counts.
+          Half of that is a 500 USDC offer. After you repay one advance in full, the same sales would offer 625 USDC
+          (1.25×). The fee is 6%, so a 500 USDC advance costs 30 USDC.
+        </p>
+      </details>
     </div>
   );
 }

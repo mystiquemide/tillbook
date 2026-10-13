@@ -11,7 +11,11 @@ export function RequestPayment({ address }: { address: `0x${string}` }) {
   const [origin, setOrigin] = useState("");
   const [svg, setSvg] = useState("");
   const [copied, setCopied] = useState(false);
-  useEffect(() => setOrigin(window.location.origin), []);
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => {
+    setOrigin(window.location.origin);
+    setCanShare(typeof navigator.share === "function");
+  }, []);
 
   const amount = parseUsdc(input);
   const invalid = input.trim() !== "" && amount === null;
@@ -77,6 +81,35 @@ export function RequestPayment({ address }: { address: `0x${string}` }) {
           }`}
         >
           Download QR
+        </a>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px]">
+        {canShare && (
+          <button
+            type="button"
+            disabled={invalid || !origin}
+            onClick={() =>
+              navigator
+                .share({
+                  title: "Pay with Tillbook",
+                  text: amount !== null ? `Pay ${input.trim()} USDC with Tillbook` : "Pay me in USDC with Tillbook",
+                  url,
+                })
+                .catch(() => {})
+            }
+            className="text-primary-ink hover:underline disabled:text-ink-3"
+          >
+            Share payment request
+          </button>
+        )}
+        <a
+          href={invalid ? undefined : url}
+          target="_blank"
+          rel="noreferrer"
+          aria-disabled={invalid}
+          className={`text-primary-ink hover:underline ${invalid ? "pointer-events-none text-ink-3" : ""}`}
+        >
+          Preview what customers see
         </a>
       </div>
     </div>
