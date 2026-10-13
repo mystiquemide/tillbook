@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { findPage, groups, pages } from "../content";
+import { BackHome } from "@/components/BackHome";
 
 type Props = { params: Promise<{ slug?: string[] }> };
 
@@ -31,6 +32,7 @@ export default async function DocPage({ params }: Props) {
   return (
     <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_200px] xl:gap-10">
       <article id="main" className="min-w-0">
+        <BackHome className="mb-6" />
         <p className="text-[14px] text-primary-ink">{group.title}</p>
         <h1 className="mt-2 text-[34px] leading-[1.15] font-[550] tracking-[-0.03em] md:text-[42px]">{page.title}</h1>
         <p className="mt-3 text-[17px] leading-[1.6] text-ink-2">{page.description}</p>
