@@ -11,13 +11,26 @@
 | | |
 |---|---|
 | **Category** | Onchain finance: payments, lending and credit (Monad Metropolis, Track 01: Onchain Finance & Trading) |
-| **Status** | Live on Monad mainnet with verified contracts and a public web app |
+| **Status** | Live on Monad mainnet with verified contracts. The first real advance was drawn from real sales and is repaying ([see below](#live-on-mainnet)) |
 | **Who it serves** | Small merchants who need working capital, customers who pay in USDC, and lenders who want yield backed by real sales |
 | **How lenders earn** | A flat 6% fee on each advance, paid into the ERC-4626 vault slice by slice as merchants make sales |
 | **Core contracts** | `SplitRouter` (payment split) and `LenderPool` (ERC-4626 vault with EIP-712 signed offers) |
-| **Integrations** | Monad, USDC, OpenZeppelin, Privy embedded wallets, Envio HyperIndex, Alchemy RPC |
+| **Integrations** | Monad, USDC, OpenZeppelin, Privy embedded wallets, Envio HyperIndex, Alchemy RPC, built with Solidity, Foundry, viem, wagmi and Sourcify |
+| **For newcomers** | Email or Google sign-in, a built-in wallet with send, receive and key backup, and a 2-minute interactive walkthrough at [`/start`](https://tillbook.midelabs.xyz/start) |
 | **Quality** | 1,336 automated tests including fuzz, invariant and mainnet-fork tests, run in CI on every push |
 | **Try it** | [tillbook.midelabs.xyz](https://tillbook.midelabs.xyz) · [Live proof page](https://tillbook.midelabs.xyz/proof) |
+
+## New to crypto? Start here
+
+Open [tillbook.midelabs.xyz/start](https://tillbook.midelabs.xyz/start). It's a hands-on walkthrough with no jargon:
+
+1. **The idea.** What Tillbook does for a shop, in one paragraph.
+2. **Try it.** Run a pretend shop: take sales, unlock an offer, draw it and watch 10% of each sale pay it down. The offer uses the same formula the live underwriter signs with.
+3. **Who does what.** What a shop owner, a customer and a lender each do, step by step.
+4. **Words you'll see.** Wallet, USDC, MON, confirm, address, advance and pool in plain words.
+5. **Get started.** Pick a role and follow a checklist that ticks itself off from your real wallet: signed in, MON for fees, USDC, first action.
+
+Signing in with email or Google creates a wallet for you. The walkthrough stays one click away in the account menu.
 
 ## Why this exists
 
@@ -64,14 +77,31 @@ Source: [`underwriter/src/formula.ts`](underwriter/src/formula.ts). The same num
 
 | Page | For | What it does |
 |---|---|---|
-| [`/`](https://tillbook.midelabs.xyz) | Everyone | What Tillbook is, with live pool numbers read straight from the contracts |
-| [`/merchant`](https://tillbook.midelabs.xyz/merchant) | Merchants | Sales ledger, current offer and the math behind it, draw an advance, amount still owed, payment requests with QR codes, CSV export |
+| [`/`](https://tillbook.midelabs.xyz) | Everyone | What Tillbook is and how it works |
+| [`/start`](https://tillbook.midelabs.xyz/start) | Newcomers | Interactive walkthrough and a live first-transaction checklist |
+| [`/merchant`](https://tillbook.midelabs.xyz/merchant) | Merchants | Sales ledger, current offer and the math behind it, draw an advance, amount still owed, payment requests with QR codes and sharing, CSV export |
 | `/pay/[merchant]` | Customers | Checkout. Shows exactly how the payment splits before you confirm. `?amount=25.50` pre-fills a requested amount |
-| [`/lend`](https://tillbook.midelabs.xyz/lend) | Lenders | Pool size, free liquidity, return since launch, deposit and withdraw, every advance with its repayment status |
-| [`/proof`](https://tillbook.midelabs.xyz/proof) | Anyone | Live checks against the mainnet contracts, onchain activity, tests and measured gas |
-| `/m/[merchant]` | Lenders and anyone | Public record of a merchant: every sale, repayments, and how their offer is priced |
+| [`/lend`](https://tillbook.midelabs.xyz/lend) | Lenders | Deposit and withdraw with a review step before each one, your position and earnings, and every advance with its repayment status |
+| [`/wallet`](https://tillbook.midelabs.xyz/wallet) | Everyone signed in | Balance in dollars, send USDC or MON, receive by QR, labelled activity history, private key export for email wallets |
+| `/m/[merchant]` | Lenders | Public sales record of one merchant and how their offer is priced |
+| [`/proof`](https://tillbook.midelabs.xyz/proof) | Anyone | Live checks against the mainnet contracts, tests and measured gas |
+| [`/risks`](https://tillbook.midelabs.xyz/risks) | Anyone | What can go wrong, in plain words |
 
-Every amount links to the transaction or contract read it came from. Nothing in the app is mock data, and empty states say so plainly.
+Nothing in the app is mock data. Balances, offers and history are read from Monad, and empty states say so plainly.
+
+### Wallet
+
+After signing in, `/wallet` works like a banking app:
+
+- **Balance** in dollars: USDC plus your lending deposit, with MON shown separately for network fees.
+- **Send** USDC or MON with a review step. It blocks invalid addresses, your own address, Tillbook's contract addresses and amounts above your balance, and keeps enough MON for the fee.
+- **Receive** with a QR code, a copy button and a warning to use the Monad network only.
+- **Activity** from onchain USDC transfers since launch, each labelled from Tillbook events in the same transaction: payment, sale (with the part that repaid an advance), deposit, withdrawal, advance, sent or received.
+- **Backup.** Wallets Privy created at sign-in can export their private key after a fresh sign-in and an explicit warning. The key opens in Privy's isolated window, so Tillbook's code never sees it. Browser wallets keep their keys and the page says where to back them up.
+
+### Privacy
+
+Tillbook doesn't publish pool size, lender balances or advance amounts on its pages. The advances list shows only each advance's number and whether it's repaid, and the API returns nothing more. Merchants choose to share their sales record through `/m/[address]`. Monad is a public chain, so the contracts' events can still be read on an explorer.
 
 ## Why Monad
 
@@ -89,9 +119,10 @@ The repayment happens inside each customer payment, so every sale is a contract 
 | **Monad** | Mainnet, chain 143. Every sale is a contract call, so speed and gas cost decide whether in-sale repayment works at all. |
 | **USDC** | Circle's native USDC is the only asset the pool and router accept. |
 | **OpenZeppelin** | ERC-4626 vault, EIP-712 offer signatures, SafeERC20 and reentrancy guards in `LenderPool`. |
-| **Privy** | Email, Google or wallet sign-in. People without a crypto wallet get an embedded Monad wallet when they sign in, so a customer can pay from a link without installing anything. |
+| **Privy** | Email, Google or wallet sign-in. People without a crypto wallet get an embedded Monad wallet when they sign in, so a customer can pay from a link without installing anything. Embedded wallets can export their key from `/wallet` after a fresh sign-in. |
 | **Envio** | A HyperIndex indexer ([`indexer/`](indexer)) tracks payments, advances, repayments and lender flows. The app reads history from it whenever it's caught up to the chain head, and falls back to scanning logs otherwise. |
 | **Alchemy** | Server-side contract reads and offer pricing go through Alchemy's Monad RPC, with the public RPC as automatic fallback. |
+| **Toolchain** | Solidity and Foundry for the contracts and their tests, viem and wagmi in the app and underwriter, Sourcify for source verification. |
 
 ## Deployed on Monad mainnet
 
@@ -110,6 +141,30 @@ Chain 143. Pool deploy block 112997981. Advance cap 5,000 USDC, fixed at deploy.
 |---|---|
 | [`LenderPool`](contracts/src/LenderPool.sol) | ERC-4626 USDC vault. Pays advances against EIP-712 offers and takes repayments. Fees reach lenders as repayments arrive. Withdrawals are limited to liquidity that isn't lent out. |
 | [`SplitRouter`](contracts/src/SplitRouter.sol) | Splits each payment between the merchant and the pool. Holds no funds and has no owner. |
+
+## Live on mainnet
+
+A full loop ran on Monad mainnet with real USDC: one lender, one merchant, three different customers.
+
+| Step | Transaction |
+|---|---|
+| Lender deposits 2 USDC into the pool | [`0x01ab63...2050`](https://monadscan.com/tx/0x01ab631cb550ad8508d11272b3955417d87c9e3da4631e8b89a3f049e2902050) |
+| Customer 1 pays the merchant 0.50 | [`0x490c08...e6`](https://monadscan.com/tx/0x490c08e9ddc35d9ba935996d004dff0906bab4539a0124597d4e150ef576d2e6) |
+| Customer 2 pays 0.50 | [`0xc98d85...61`](https://monadscan.com/tx/0xc98d8594098110b852dec078a5145badc4941819b168abe0a610311ec7b9ad61) |
+| Customer 3 pays 0.50 | [`0x890922...fc`](https://monadscan.com/tx/0x890922bcd80e8b798e233d959bcde8ee1ce1b352ec87a515f09955ca3aa8bbfc) |
+| Merchant draws a signed advance | [`0xc73669...7d`](https://monadscan.com/tx/0xc73669cc7b3645e04181219c87ca295f0cb7f8854e55fa3001fa21a080926d7c) |
+| A later sale repays 10% to the pool in the same payment | [`0xe53c35...50`](https://monadscan.com/tx/0xe53c3535e7f400696bce88f376fa10c8e0305e5a8dda1d14003dcb1f80f2fd50) |
+
+## Try it yourself
+
+You need a little MON for fees and some USDC on Monad. Small amounts are enough.
+
+1. **Lend.** Sign in at `/lend`, enter an amount, check the review and deposit. You confirm twice: allow USDC, then deposit.
+2. **Get paid.** Sign in with a second account at `/merchant` and copy your payment link or QR code.
+3. **Collect sales.** Pay that link from three different wallets. Your own payments don't count.
+4. **Draw.** Back on `/merchant`, the offer appears with every input shown. Draw it and the USDC lands in your wallet.
+5. **Repay by selling.** Pay the link again and watch "Still owed" drop by 10% of the sale.
+6. **Check the wallet.** `/wallet` shows each step labelled in Activity.
 
 ## Security model
 
