@@ -142,7 +142,7 @@ function Ledger({ query }: { query: ReturnType<typeof useQuery<MerchantResponse>
   if (query.isError) {
     const code = query.error instanceof ApiError ? query.error.code : "";
     if (code === "underwriter_not_configured")
-      return <Notice title="Offers are offline." tone="warning">The underwriter key isn&apos;t configured on this server.</Notice>;
+      return <Notice title="Offers are paused right now." tone="warning">Your sales are still recorded. Check back soon for your offer.</Notice>;
     return null;
   }
   const all = [...(query.data?.payments ?? [])].reverse();
@@ -219,7 +219,7 @@ const reasons: Record<string, { title: string; body: (i: ApiInputs | null) => st
     title: "No offer yet.",
     body: (i) => `Offers start at 3 different customers in the last 30 days. You have ${i?.distinctPayers ?? 0}.`,
   },
-  no_volume: { title: "No offer yet.", body: () => "Your recent sales are too small to price an advance." },
+  no_volume: { title: "No offer yet.", body: () => "Your recent sales are too small to price an advance yet. Keep taking payments through your link." },
   pool_empty: { title: "No lender funds available right now.", body: () => "Your record is ready. Check back once lenders deposit." },
   advance_active: { title: "You have an advance open.", body: () => "It's being repaid from your sales." },
 };

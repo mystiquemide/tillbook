@@ -28,7 +28,7 @@ export function WalletButton() {
     }
     return (
       <div className="flex items-center gap-3">
-        {error && <span className="hidden text-[13px] text-error md:inline">Connection refused</span>}
+        {error && <span role="alert" className="hidden text-[13px] text-error md:inline">Wallet didn&apos;t connect. Try again.</span>}
         <button
           type="button"
           onClick={() => connect({ connector: connectors[0]!, chainId: monad.id })}

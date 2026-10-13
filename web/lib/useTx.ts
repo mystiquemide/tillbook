@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { usePublicClient, useWriteContract } from "wagmi";
-import { BaseError, type Hash } from "viem";
+import { BaseError, ContractFunctionRevertedError, type Hash } from "viem";
 
 export type TxState =
   | { status: "idle" }
@@ -27,7 +27,7 @@ export function useTx() {
         const receipt = await client!.waitForTransactionReceipt({ hash, pollingInterval: 200 });
         const ms = Math.round(performance.now() - start);
         if (receipt.status !== "success") {
-          setState({ status: "error", label, message: "The transaction reverted onchain." });
+          setState({ status: "error", label, message: "This transaction didn't go through, so nothing moved. Try again." });
           return false;
         }
         setState({ status: "success", label, hash, ms });
@@ -43,10 +43,28 @@ export function useTx() {
   return { state, send, reset: () => setState({ status: "idle" }) };
 }
 
+// Contract errors a user can actually hit, in plain words with a next step.
+const reasons: Record<string, string> = {
+  OfferExpired: "This offer expired before it was confirmed. Get a fresh offer and try again.",
+  BadNonce: "This offer was already used. Get a fresh offer.",
+  BadSignature: "This offer couldn't be verified. Get a fresh offer.",
+  AdvanceActive: "You already have an advance open. It needs to be repaid before you draw again.",
+  InsufficientLiquidity: "The pool doesn't have enough free USDC for this right now. Try a smaller amount or check back later.",
+  AboveMaxAdvance: "This is above the 5,000 USDC limit per advance.",
+  NotMerchant: "Switch to the wallet this offer was made for.",
+  InvalidMerchant: "This isn't a valid merchant address. Ask the merchant for their link again.",
+  ZeroAmount: "Enter an amount above zero.",
+};
+
 function readable(err: unknown): string {
   if (err instanceof BaseError) {
-    if (err.walk((e) => e instanceof Error && e.name === "UserRejectedRequestError")) return "You rejected the request in your wallet.";
-    return err.shortMessage;
+    if (err.walk((e) => e instanceof Error && e.name === "UserRejectedRequestError"))
+      return "Cancelled in your wallet. Nothing was sent.";
+    if (err.walk((e) => e instanceof Error && e.name === "InsufficientFundsError"))
+      return "Your wallet needs a little MON to cover the network fee.";
+    const revert = err.walk((e) => e instanceof ContractFunctionRevertedError);
+    const name = revert instanceof ContractFunctionRevertedError ? revert.data?.errorName : undefined;
+    if (name && reasons[name]) return reasons[name];
   }
-  return err instanceof Error ? err.message : "Something went wrong.";
+  return "This didn't go through, so nothing moved. Try again, and if it keeps failing, refresh the page.";
 }
