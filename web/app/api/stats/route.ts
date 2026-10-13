@@ -57,7 +57,8 @@ export async function GET() {
         advanced: advanced.toString(),
         repaid,
       },
-      { headers: { "cache-control": "no-store" } },
+      // Landing page totals: served from the CDN for 10s and refreshed in the background, so a cold server never blocks the page.
+      { headers: { "cache-control": "public, s-maxage=10, stale-while-revalidate=300" } },
     );
   } catch (err) {
     console.error("stats read failed", err);
