@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Tillbook: your sales are your credit",
   description,
   openGraph: { title: "Tillbook: your sales are your credit", description, type: "website", siteName: "Tillbook" },
-  twitter: { card: "summary", title: "Tillbook: your sales are your credit", description },
+  twitter: { card: "summary_large_image", title: "Tillbook: your sales are your credit", description },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
