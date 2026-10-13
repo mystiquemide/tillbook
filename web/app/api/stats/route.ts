@@ -4,6 +4,7 @@ import { poolAbi, routerAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
 import { publicClient } from "@/lib/server";
 import { cachedLogs } from "@/lib/logs";
+import { fromIndexer, indexer } from "@/lib/indexer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,23 @@ export async function GET() {
       publicClient.readContract({ address: pool, abi: poolAbi, functionName: "totalAssets" }),
       publicClient.readContract({ address: pool, abi: poolAbi, functionName: "principalOutstanding" }),
     ]);
+    const cache = { "cache-control": "public, s-maxage=10, stale-while-revalidate=300" };
+    const indexed = await fromIndexer(head, () => indexer.totals());
+    if (indexed !== null)
+      return NextResponse.json(
+        {
+          totalAssets: totalAssets.toString(),
+          outstanding: outstanding.toString(),
+          payments: indexed?.payments ?? 0,
+          volume: indexed?.volume ?? "0",
+          merchants: indexed?.merchants ?? 0,
+          advances: indexed?.advances ?? 0,
+          advanced: indexed?.advanced ?? "0",
+          repaid: indexed?.advancesRepaid ?? 0,
+        },
+        { headers: { ...cache, "x-data-source": "envio" } },
+      );
+
     const paymentEv = getAbiItem({ abi: routerAbi, name: "Payment" });
     const drawnEv = getAbiItem({ abi: poolAbi, name: "AdvanceDrawn" });
     const repaidEv = getAbiItem({ abi: poolAbi, name: "AdvanceRepaid" });

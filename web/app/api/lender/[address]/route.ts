@@ -4,6 +4,7 @@ import { poolAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
 import { publicClient } from "@/lib/server";
 import { cachedLogs } from "@/lib/logs";
+import { fromIndexer, indexer } from "@/lib/indexer";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
   const owner = getAddress(address);
   try {
     const head = await publicClient.getBlockNumber();
+    const indexed = await fromIndexer(head, () => indexer.lender(owner));
+    if (indexed !== null)
+      return NextResponse.json(
+        { deposited: indexed?.deposited ?? "0", withdrawn: indexed?.withdrawn ?? "0" },
+        { headers: { "cache-control": "no-store", "x-data-source": "envio" } },
+      );
     const dep = getAbiItem({ abi: poolAbi, name: "Deposit" });
     const wd = getAbiItem({ abi: poolAbi, name: "Withdraw" });
     let deposited = 0n;

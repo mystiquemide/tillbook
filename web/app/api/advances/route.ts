@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { getAbiItem } from "viem";
+import { getAbiItem, getAddress } from "viem";
 import { poolAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
 import { publicClient } from "@/lib/server";
 import { cachedLogs } from "@/lib/logs";
+import { fromIndexer, indexer } from "@/lib/indexer";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,23 @@ export async function GET() {
   if (!isLive) return NextResponse.json({ error: "not_live" }, { status: 503 });
   try {
     const head = await publicClient.getBlockNumber();
+    const indexed = await fromIndexer(head, () => indexer.advances());
+    if (indexed !== null) {
+      const rows: Row[] = indexed.map((a) => ({
+        merchant: getAddress(a.merchant),
+        amount: a.amount,
+        fee: a.fee,
+        holdbackBps: a.holdbackBps,
+        blockNumber: a.blockNumber,
+        txHash: a.txHash,
+        repaid: a.repaid,
+        repaidTx: a.repaidTxHash,
+      }));
+      return NextResponse.json(
+        { advances: rows, head: head.toString() },
+        { headers: { "cache-control": "no-store", "x-data-source": "envio" } },
+      );
+    }
     const drawn = getAbiItem({ abi: poolAbi, name: "AdvanceDrawn" });
     const repaidEv = getAbiItem({ abi: poolAbi, name: "AdvanceRepaid" });
     const rows: Row[] = [];

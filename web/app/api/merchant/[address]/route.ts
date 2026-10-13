@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { isAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import { quoteMerchant, toJson, type ReadClient } from "@tillbook/underwriter";
 import { addresses, deployBlock, isLive, monad } from "@/lib/chain";
 import { publicClient, underwriterKey } from "@/lib/server";
 import { cachedBlock, cachedLogs } from "@/lib/logs";
+import { fromIndexer, indexer, type IndexedPayment } from "@/lib/indexer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
 
   try {
     const block = await publicClient.getBlock();
+    // Prefer the Envio index for sales history; fall back to scanning chain logs when it's missing or behind.
+    const indexed = await fromIndexer(block.number, () => indexer.payments(address));
+    const history = indexed ? indexedHistory(indexed, block.number) : { getLogs: cachedLogs, getBlock: cachedBlock };
     const result = await quoteMerchant({
-      client: { ...publicClient, getLogs: cachedLogs, getBlock: cachedBlock } as unknown as ReadClient,
+      client: { ...publicClient, ...history } as unknown as ReadClient,
       chainId: monad.id,
       pool: addresses.pool!,
       router: addresses.router!,
@@ -28,9 +32,26 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
       now: block.timestamp,
       chunkSize: block.number - deployBlock + 1n,
     });
-    return NextResponse.json(toJson(result), { headers: { "cache-control": "no-store" } });
+    return NextResponse.json(toJson(result), {
+      headers: { "cache-control": "no-store", "x-data-source": indexed ? "envio" : "rpc" },
+    });
   } catch (err) {
     console.error("merchant quote failed", err);
     return NextResponse.json({ error: "rpc_unavailable" }, { status: 502 });
   }
+}
+
+/** Serves indexed payments in the shape the underwriter's log reader expects, so the offer math is identical either way. */
+function indexedHistory(payments: IndexedPayment[], head: bigint) {
+  const rows = payments.filter((p) => BigInt(p.blockNumber) <= head);
+  const times = new Map(rows.map((p) => [BigInt(p.blockNumber), BigInt(p.timestamp)]));
+  return {
+    getLogs: async () =>
+      rows.map((p) => ({
+        args: { payer: getAddress(p.payer), amount: BigInt(p.amount), repaid: BigInt(p.repaid), ref: p.ref as `0x${string}` },
+        blockNumber: BigInt(p.blockNumber),
+        transactionHash: p.txHash as `0x${string}`,
+      })),
+    getBlock: async ({ blockNumber }: { blockNumber: bigint }) => ({ timestamp: times.get(blockNumber) ?? 0n }),
+  };
 }
