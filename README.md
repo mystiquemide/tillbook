@@ -103,6 +103,60 @@ After signing in, `/wallet` works like a banking app:
 
 Tillbook doesn't publish pool size, lender balances or advance amounts on its pages. The advances list shows only each advance's number and whether it's repaid, and the API returns nothing more. Merchants choose to share their sales record through `/m/[address]`. Monad is a public chain, so the contracts' events can still be read on an explorer.
 
+## Architecture
+
+```mermaid
+flowchart TB
+  C["Customer"] & M["Merchant"] & L["Lender"] --> P["Privy sign-in and embedded wallets"]
+  P --> UI["Tillbook app on Vercel"]
+
+  subgraph Monad["Monad mainnet, USDC only"]
+    R["SplitRouter"]
+    LP["LenderPool, ERC-4626 vault"]
+  end
+
+  UI -- "customer pays" --> R
+  UI -- "lender deposits or withdraws" --> LP
+  UI -- "merchant draws a signed offer" --> LP
+  R -- "90% of each sale" --> M
+  R -- "10% repays the advance" --> LP
+  LP -- "advance in USDC" --> M
+
+  R & LP -. "events" .-> E["Envio HyperIndex"]
+  E --> API["API routes and underwriter"]
+  A["Alchemy RPC, public RPC fallback"] --> API
+  API -- "ledger, history, EIP-712 offer" --> UI
+```
+
+How an advance happens, end to end:
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Customers
+  participant R as SplitRouter
+  participant M as Merchant
+  participant App as Tillbook app
+  participant UW as Underwriter
+  participant LP as LenderPool
+
+  C->>R: pay(merchant, amount)
+  R->>M: USDC for the sale
+  R-->>App: Payment event, indexed by Envio
+  M->>App: open the merchant dashboard
+  App->>UW: sales from 3+ customers in 30 days
+  UW-->>M: offer signed with EIP-712, valid 15 minutes
+  M->>LP: requestAdvance(offer, signature)
+  LP->>M: advance in USDC
+  C->>R: next sale
+  R->>LP: 10% of the sale repays the advance
+  R->>M: the other 90%
+```
+
+- **Contracts** hold all funds and enforce every rule. The underwriter can only sign offers, which the pool checks against a hard cap, one open advance per merchant, a nonce and an expiry.
+- **The app** reads history from Envio when the indexer is caught up and falls back to scanning chain logs. Contract reads go through Alchemy with the public RPC as backup.
+- **Wallets** come from Privy for email and Google sign-in, or any browser wallet. Keys never pass through Tillbook's servers.
+
 ## Why Monad
 
 The repayment happens inside each customer payment, so every sale is a contract call. That only works if paying through the contract feels like paying normally.
