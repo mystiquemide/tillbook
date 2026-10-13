@@ -7,7 +7,7 @@ import { formatUnits } from "viem";
 import { useAccount, useReadContracts, useBalance } from "wagmi";
 import { NotLive, Notice, card } from "@/components/app/Notice";
 import { privyEnabled } from "@/lib/wagmi";
-import { RiskNote } from "@/components/app/RiskNote";
+import { HowLending, RiskNote } from "@/components/app/RiskNote";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
 import { CountUp } from "@/components/motion/CountUp";
@@ -121,8 +121,9 @@ function Live() {
               Switch to Monad with the button at the top right.
             </Notice>
           ) : (
-            <Position address={address} idle={idle} onChange={refreshPool} />
+            <Position address={address} idle={idle} total={total} price={price} onChange={refreshPool} />
           )}
+          <HowLending />
           <RiskNote />
         </aside>
       </div>
@@ -169,7 +170,19 @@ function Stat({
   );
 }
 
-function Position({ address, idle, onChange }: { address: `0x${string}`; idle: bigint | undefined; onChange: () => void }) {
+function Position({
+  address,
+  idle,
+  total,
+  price,
+  onChange,
+}: {
+  address: `0x${string}`;
+  idle: bigint | undefined;
+  total: bigint | undefined;
+  price: bigint | undefined;
+  onChange: () => void;
+}) {
   const [mode, setMode] = useState<"deposit" | "withdraw">("deposit");
   const [input, setInput] = useState("");
   const tx = useTx();
@@ -203,6 +216,11 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
 
   const gas = useBalance({ address });
   const amount = parseUsdc(input);
+  const preview = useReadContracts({
+    contracts: [{ address: addresses.pool!, abi: poolAbi, functionName: "convertToShares", args: [amount ?? 0n] }],
+    query: { enabled: amount !== null && mode === "deposit" },
+  });
+  const sharesOut = preview.data?.[0]?.result as bigint | undefined;
   const limit = mode === "deposit" ? balance : maxWithdraw;
   const busy = tx.state.status === "signing" || tx.state.status === "pending";
   const needsApproval = mode === "deposit" && amount !== null && allowance !== undefined && allowance < amount;
@@ -240,19 +258,34 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
 
   return (
     <>
-      <div className={`${card} p-6`}>
-        <p className="text-[14px] text-ink-2">Your deposit is worth</p>
-        <p className="mt-1 font-mono text-[36px] leading-[1.1] tracking-[-0.02em]">{worth === undefined ? "..." : usdc(worth)}</p>
-        <p className="mt-1 text-[14px] text-ink-2">
-          USDC
+      <div className={`${card} grid grid-cols-2 divide-x divide-hairline`}>
+        <div className="p-5">
+          <p className="text-[13px] text-ink-2">Your pool position</p>
+          <p className="mt-1 font-mono text-[26px] leading-[1.15] tracking-[-0.02em]">
+            {worth === undefined ? "..." : usdc(worth)}
+            <span className="ml-1 font-sans text-[13px] tracking-normal text-ink-3">USDC</span>
+          </p>
           {earned !== undefined && net !== undefined && net > 0n && (
-            <>
-              . Earned so far <span className={`font-mono ${earned > 0n ? "text-positive" : "text-ink"}`}>{usdc(earned > 0n ? earned : 0n)}</span>
-            </>
+            <p className="mt-1 text-[13px] text-ink-2">
+              Earned <span className={`font-mono ${earned > 0n ? "text-positive" : "text-ink"}`}>{usdc(earned > 0n ? earned : 0n)}</span>
+            </p>
           )}
-          .
-        </p>
+        </div>
+        <div className="p-5">
+          <p className="text-[13px] text-ink-2">Available in wallet</p>
+          <p className="mt-1 font-mono text-[26px] leading-[1.15] tracking-[-0.02em]">
+            {balance === undefined ? "..." : usdc(balance)}
+            <span className="ml-1 font-sans text-[13px] tracking-normal text-ink-3">USDC</span>
+          </p>
+        </div>
       </div>
+
+      {total === 0n && balance !== undefined && balance > 0n && (
+        <div className="rounded-[20px] bg-primary-tint p-5 text-[14px] leading-[1.55] text-primary-ink">
+          Your wallet has <span className="font-mono">{usdc(balance)}</span> USDC. Deposit now and you&apos;ll be
+          Tillbook&apos;s first lender, funding the first merchant advance. Read the risks below first.
+        </div>
+      )}
 
       <div className={`${card} p-6`}>
         <div role="tablist" aria-label="Action" className="mb-5 grid grid-cols-2 rounded-full bg-surface p-1 ring-1 ring-hairline">
@@ -298,16 +331,27 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
         <p className="mt-2 text-[13px] text-ink-3">
           {mode === "deposit" ? (
             <>
-              In your wallet: <span className="font-mono">{balance === undefined ? "..." : usdc(balance)}</span>
+              Available in wallet: <span className="font-mono">{balance === undefined ? "..." : usdc(balance)}</span> USDC
             </>
           ) : (
             <>
-              You can withdraw now: <span className="font-mono">{maxWithdraw === undefined ? "..." : usdc(maxWithdraw)}</span>
+              You can withdraw now: <span className="font-mono">{maxWithdraw === undefined ? "..." : usdc(maxWithdraw)}</span> USDC
               {idle !== undefined && idle === 0n && " (everything is lent out)"}
             </>
           )}
         </p>
         {problem && <p className="mt-3 text-[14px] text-warning">{problem}</p>}
+        {amount !== null && problem === null && (
+          <Review
+            mode={mode}
+            amount={amount}
+            shares={sharesOut}
+            price={price}
+            walletAfter={balance === undefined ? undefined : mode === "deposit" ? balance - amount : balance + amount}
+            positionAfter={worth === undefined ? undefined : mode === "deposit" ? worth + amount : worth - amount}
+            confirmations={needsApproval ? 2 : 1}
+          />
+        )}
         <button
           type="button"
           disabled={busy || amount === null || problem !== null}
@@ -329,6 +373,50 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
         </div>
       </div>
     </>
+  );
+}
+
+/** What the next transaction will do, shown before the wallet asks for a signature. */
+function Review({
+  mode,
+  amount,
+  shares,
+  price,
+  walletAfter,
+  positionAfter,
+  confirmations,
+}: {
+  mode: "deposit" | "withdraw";
+  amount: bigint;
+  shares: bigint | undefined;
+  price: bigint | undefined;
+  walletAfter: bigint | undefined;
+  positionAfter: bigint | undefined;
+  confirmations: number;
+}) {
+  const rows: [string, string][] = [
+    [mode === "deposit" ? "You deposit" : "You withdraw", `${usdc(amount)} USDC`],
+    ...(mode === "deposit" && shares !== undefined
+      ? ([["You receive", `${Number(formatUnits(shares, 12)).toLocaleString("en-US", { maximumFractionDigits: 4 })} pool shares`]] as [string, string][])
+      : []),
+    ...(price !== undefined ? ([["Share price", `${Number(formatUnits(price, 6)).toFixed(6)} USDC`]] as [string, string][]) : []),
+    ...(walletAfter !== undefined ? ([["Wallet after", `${usdc(walletAfter)} USDC`]] as [string, string][]) : []),
+    ...(positionAfter !== undefined ? ([["Pool position after", `${usdc(positionAfter > 0n ? positionAfter : 0n)} USDC`]] as [string, string][]) : []),
+    ["Wallet confirmations", confirmations === 2 ? "2: allow USDC, then deposit" : "1"],
+    ["Network", "Monad mainnet, native USDC. Small fee in MON"],
+  ];
+  return (
+    <div className="mt-4 rounded-[14px] bg-surface p-4 ring-1 ring-hairline">
+      <p className="mb-2 text-[13px] font-[450] text-ink">Review</p>
+      <dl className="space-y-1.5 text-[13px]">
+        {rows.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-4">
+            <dt className="text-ink-2">{k}</dt>
+            <dd className={`text-right ${k === "Network" || k === "Wallet confirmations" ? "" : "font-mono"}`}>{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }
 

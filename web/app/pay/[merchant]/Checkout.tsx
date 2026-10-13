@@ -126,7 +126,7 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
       <p className="mt-2 text-[13px] text-ink-3">
         {balance !== undefined ? (
           <>
-            In your wallet: <span className="font-mono">{usdc(balance)}</span>
+            Available in wallet: <span className="font-mono">{usdc(balance)}</span> USDC
           </>
         ) : (
           privyEnabled ? "Sign in to see your balance." : "Connect a wallet to see your balance."

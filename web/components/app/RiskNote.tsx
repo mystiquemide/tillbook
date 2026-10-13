@@ -30,3 +30,28 @@ export function RiskNote() {
     </div>
   );
 }
+
+/** Four steps from deposit to return, for lenders who don't know how a share vault works. */
+export function HowLending() {
+  const steps = [
+    "You deposit USDC into the pool.",
+    "You receive pool shares for your slice of it.",
+    "Merchants draw advances, capped at 5,000 USDC each.",
+    "Each repayment adds its fee to the pool, so every share is worth more.",
+  ];
+  return (
+    <div className={`${card} p-6`}>
+      <p className="text-[15px] font-[450]">How lending works</p>
+      <ol className="mt-3 space-y-2.5">
+        {steps.map((step, i) => (
+          <li key={step} className="flex gap-3 text-[14px] leading-[1.5] text-ink-2">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary-tint font-mono text-[12px] text-primary-ink">
+              {i + 1}
+            </span>
+            {step}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}

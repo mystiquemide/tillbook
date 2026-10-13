@@ -21,6 +21,7 @@ export const poolAbi = parseAbi([
   "function underwriter() view returns (address)",
   "function balanceOf(address) view returns (uint256)",
   "function convertToAssets(uint256 shares) view returns (uint256)",
+  "function convertToShares(uint256 assets) view returns (uint256)",
   "function maxWithdraw(address owner) view returns (uint256)",
   "function deposit(uint256 assets, address receiver) returns (uint256)",
   "function withdraw(uint256 assets, address receiver, address owner) returns (uint256)",
