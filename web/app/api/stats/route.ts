@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { blockRanges } from "@tillbook/underwriter";
 import { getAbiItem } from "viem";
 import { poolAbi, routerAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
-import { LOG_CHUNK, publicClient } from "@/lib/server";
+import { publicClient } from "@/lib/server";
+import { cachedLogs } from "@/lib/logs";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +28,11 @@ export async function GET() {
     let repaid = 0;
     const merchants = new Set<string>();
 
-    for (const [fromBlock, toBlock] of blockRanges(deployBlock, head, LOG_CHUNK)) {
+    for (const [fromBlock, toBlock] of [[deployBlock, head]] as const) {
       const [p, d, r] = await Promise.all([
-        publicClient.getLogs({ address: addresses.router!, event: paymentEv, fromBlock, toBlock }),
-        publicClient.getLogs({ address: pool, event: drawnEv, fromBlock, toBlock }),
-        publicClient.getLogs({ address: pool, event: repaidEv, fromBlock, toBlock }),
+        cachedLogs({ address: addresses.router!, event: paymentEv, fromBlock, toBlock }),
+        cachedLogs({ address: pool, event: drawnEv, fromBlock, toBlock }),
+        cachedLogs({ address: pool, event: repaidEv, fromBlock, toBlock }),
       ]);
       for (const l of p) {
         payments++;

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { blockRanges } from "@tillbook/underwriter";
 import { getAbiItem, getAddress, isAddress } from "viem";
 import { poolAbi } from "@/lib/abi";
 import { addresses, deployBlock, isLive } from "@/lib/chain";
-import { LOG_CHUNK, publicClient } from "@/lib/server";
+import { publicClient } from "@/lib/server";
+import { cachedLogs } from "@/lib/logs";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +19,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
     const wd = getAbiItem({ abi: poolAbi, name: "Withdraw" });
     let deposited = 0n;
     let withdrawn = 0n;
-    for (const [fromBlock, toBlock] of blockRanges(deployBlock, head, LOG_CHUNK)) {
+    for (const [fromBlock, toBlock] of [[deployBlock, head]] as const) {
       const [d, w] = await Promise.all([
-        publicClient.getLogs({ address: addresses.pool!, event: dep, args: { owner }, fromBlock, toBlock }),
-        publicClient.getLogs({ address: addresses.pool!, event: wd, args: { owner }, fromBlock, toBlock }),
+        cachedLogs({ address: addresses.pool!, event: dep, args: { owner }, fromBlock, toBlock }),
+        cachedLogs({ address: addresses.pool!, event: wd, args: { owner }, fromBlock, toBlock }),
       ]);
       for (const l of d) deposited += l.args.assets!;
       for (const l of w) withdrawn += l.args.assets!;

@@ -53,7 +53,16 @@ Source: [`underwriter/src/formula.ts`](underwriter/src/formula.ts).
 | [`LenderPool`](contracts/src/LenderPool.sol) | ERC-4626 USDC pool. Pays advances against EIP-712 offers, takes repayments. Fees accrue to lenders as repayments arrive. Lenders can withdraw only liquidity that isn't lent out. |
 | [`SplitRouter`](contracts/src/SplitRouter.sol) | Splits each payment between the merchant and the pool. Holds no funds and has no owner. |
 
-Network: Monad mainnet (chain 143). Token: native USDC `0x754704Bc059F8C67012fEd69BC8A327a5aafb603`.
+Deployed on Monad mainnet (chain 143), source verified on Sourcify:
+
+| | Address |
+|---|---|
+| LenderPool | [`0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE`](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) |
+| SplitRouter | [`0x380A8e5A6BbE708E17397f3c31Cb806bfd920853`](https://monadscan.com/address/0x380A8e5A6BbE708E17397f3c31Cb806bfd920853) |
+| Underwriter | `0x77fB8bc19CB9fc116701b23309287b2d8F577A4A` |
+| USDC | `0x754704Bc059F8C67012fEd69BC8A327a5aafb603` |
+
+Pool deploy block: 112997981. Max advance: 5,000 USDC.
 
 ### Trust model
 

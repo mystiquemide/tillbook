@@ -9,6 +9,3 @@ export function underwriterKey(): Hex | null {
   const k = process.env.UNDERWRITER_PRIVATE_KEY;
   return k && /^0x[0-9a-fA-F]{64}$/.test(k) ? (k as Hex) : null;
 }
-
-/** Max block span per eth_getLogs call. */
-export const LOG_CHUNK = BigInt(process.env.LOG_CHUNK_SIZE || "100");

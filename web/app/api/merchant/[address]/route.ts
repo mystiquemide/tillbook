@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { isAddress } from "viem";
 import { quoteMerchant, toJson, type ReadClient } from "@tillbook/underwriter";
 import { addresses, deployBlock, isLive, monad } from "@/lib/chain";
-import { LOG_CHUNK, publicClient, underwriterKey } from "@/lib/server";
+import { publicClient, underwriterKey } from "@/lib/server";
+import { cachedLogs } from "@/lib/logs";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
   try {
     const block = await publicClient.getBlock();
     const result = await quoteMerchant({
-      client: publicClient as unknown as ReadClient,
+      client: { ...publicClient, getLogs: cachedLogs } as unknown as ReadClient,
       chainId: monad.id,
       pool: addresses.pool!,
       router: addresses.router!,
@@ -25,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
       underwriterKey: key,
       fromBlock: deployBlock,
       now: block.timestamp,
-      chunkSize: LOG_CHUNK,
+      chunkSize: block.number - deployBlock + 1n,
     });
     return NextResponse.json(toJson(result), { headers: { "cache-control": "no-store" } });
   } catch (err) {
