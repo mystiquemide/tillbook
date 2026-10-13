@@ -23,6 +23,14 @@ const columns = [
     ],
   },
   {
+    title: "Trust and support",
+    items: [
+      { label: "Risks and privacy", href: "/risks" },
+      { label: "Report a vulnerability", href: `${links.repo}/security` },
+      { label: "Support", href: `${links.repo}/issues` },
+    ],
+  },
+  {
     title: "Build",
     items: [
       { label: "Source code", href: links.repo },
@@ -36,7 +44,7 @@ const columns = [
 export function Footer() {
   return (
     <footer className="mt-6 border-t border-hairline">
-      <div className="mx-auto grid max-w-[1200px] gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[1200px] gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />
           <p className="max-w-[320px] text-[14px] leading-[1.6] text-ink-2">
