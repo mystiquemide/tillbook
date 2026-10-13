@@ -18,6 +18,7 @@ const columns = [
       { label: "For lenders", href: "/lend" },
       { label: "Live stats", href: "/stats" },
       { label: "Trust", href: "/trust" },
+      { label: "Proof", href: "/proof" },
       { label: "FAQ", href: "/faq" },
     ],
   },
@@ -63,9 +64,6 @@ export function Footer() {
             </ul>
           </div>
         ))}
-      </div>
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-t border-hairline px-6 py-6 text-[12px] leading-[1.6] text-ink-3 md:flex-row md:justify-between">
-        <p>Built for Monad Metropolis, 2026. MIT licensed.</p>
       </div>
     </footer>
   );

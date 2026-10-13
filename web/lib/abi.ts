@@ -17,6 +17,8 @@ export const poolAbi = parseAbi([
   "function idle() view returns (uint256)",
   "function principalOutstanding() view returns (uint256)",
   "function maxAdvance() view returns (uint256)",
+  "function asset() view returns (address)",
+  "function underwriter() view returns (address)",
   "function balanceOf(address) view returns (uint256)",
   "function convertToAssets(uint256 shares) view returns (uint256)",
   "function maxWithdraw(address owner) view returns (uint256)",
@@ -32,4 +34,6 @@ export const routerAbi = parseAbi([
   "event Payment(address indexed merchant, address indexed payer, uint256 amount, uint256 repaid, bytes32 ref)",
   "function pay(address merchant, uint256 amount, bytes32 ref)",
   "function quote(address merchant, uint256 amount) view returns (uint256 toPool, uint256 toMerchant)",
+  "function pool() view returns (address)",
+  "function token() view returns (address)",
 ]);

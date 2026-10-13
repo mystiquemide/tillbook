@@ -51,6 +51,13 @@ export function SiteHeader({ variant }: { variant: "landing" | "app" | "checkout
                 {s.label}
               </SectionLink>
             ))}
+            <Link
+              href="/proof"
+              aria-current={path === "/proof" ? "page" : undefined}
+              className={`py-3 text-[14px] transition-colors hover:text-ink ${path === "/proof" ? "text-ink" : "text-ink-2"}`}
+            >
+              Proof
+            </Link>
           </nav>
         )}
         <div className="flex shrink-0 items-center">
