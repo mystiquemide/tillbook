@@ -30,6 +30,20 @@ Lender ──deposit──► LenderPool ──advance──► Merchant (offer 
 4. While the advance is open, the router sends `holdbackBps` of every sale to the pool.
 5. When it is repaid, the merchant's `repaidCount` rises and their next offer grows.
 
+## The app
+
+![Merchant dashboard](web/public/screens/merchant.jpg)
+
+| Page | What it does |
+|---|---|
+| `/` | What Tillbook is, live pool numbers read from the contracts, FAQ |
+| `/merchant` | Your sales ledger, your offer and why it's that amount, draw an advance, see what's still owed, request a payment by link or QR code, export sales as CSV |
+| `/pay/[merchant]` | Checkout for customers. Shows the split before paying. `?amount=25.50` pre-fills the amount |
+| `/lend` | Pool size, free liquidity, return since launch, deposit and withdraw, every advance and its repayment status |
+| `/m/[merchant]` | Public record of any merchant: sales, repayments and how their offer is priced. Lenders use it to check who they're funding |
+
+Every number links to the transaction or contract read behind it.
+
 ## Offer formula
 
 Computed from the last 30 days of payments through the router.
@@ -91,6 +105,8 @@ Pool deploy block: 112997981. Max advance: 5,000 USDC.
 | Mainnet fork tests against live USDC | 2 |
 | TypeScript underwriter tests | 1,202 |
 
+CI runs every suite, plus lint, typecheck and a production build of the app, on each push.
+
 The parity suite checks that offers signed by the TypeScript underwriter produce the same EIP-712 digest in Solidity and are accepted by `requestAdvance`, and that split quotes match the router exactly.
 
 ```bash
@@ -104,6 +120,17 @@ cd underwriter
 npm install
 npm test
 ```
+
+## Run the app
+
+```bash
+cd underwriter && npm install
+cd ../web && npm install
+cp ../.env.example .env.local   # set UNDERWRITER_PRIVATE_KEY for offers
+npm run dev
+```
+
+The app reads the mainnet contracts above. Without `UNDERWRITER_PRIVATE_KEY` everything works except signed offers.
 
 ## Deploy
 

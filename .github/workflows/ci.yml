@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.5.1
+      - name: Format
+        working-directory: contracts
+        run: forge fmt --check
+      - name: Test
+        working-directory: contracts
+        run: forge test
+
+  underwriter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: underwriter/package-lock.json
+      - working-directory: underwriter
+        run: npm ci
+      - name: Typecheck
+        working-directory: underwriter
+        run: npm run typecheck
+      - name: Test
+        working-directory: underwriter
+        run: npm test
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - working-directory: underwriter
+        run: npm ci
+      - working-directory: web
+        run: npm ci
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+      - name: Typecheck
+        working-directory: web
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_POOL_ADDRESS: "0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE"
+          NEXT_PUBLIC_ROUTER_ADDRESS: "0x380A8e5A6BbE708E17397f3c31Cb806bfd920853"
+          NEXT_PUBLIC_POOL_DEPLOY_BLOCK: "112997981"
