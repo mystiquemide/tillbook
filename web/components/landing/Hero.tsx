@@ -6,8 +6,11 @@ import { BrowserFrame } from "./BrowserFrame";
 export function Hero() {
   return (
     <section id="merchants" aria-label="Tillbook for merchants" className="scroll-mt-20 px-3 pt-4 md:px-6">
-      <div className="mx-auto max-w-[1392px] overflow-hidden rounded-[32px] bg-surface">
-        <div className="mx-auto flex max-w-[880px] flex-col items-center px-6 pt-16 text-center md:pt-24">
+      <div className="relative mx-auto max-w-[1392px] overflow-hidden rounded-[32px] bg-surface">
+        {/* Brand arcs, matching the launch video. Decorative only. */}
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 -left-24 h-[150px] w-[150px] rounded-full bg-primary opacity-90 md:-top-52 md:-left-52 md:h-[460px] md:w-[460px]" />
+        <div aria-hidden="true" className="pointer-events-none absolute top-[58%] -right-16 h-[110px] w-[110px] rounded-full border-[14px] border-primary md:top-[18%] md:-right-28 md:h-[300px] md:w-[300px] md:border-[30px]" />
+        <div className="relative mx-auto flex max-w-[880px] flex-col items-center px-6 pt-16 text-center md:pt-24">
           <p style={{ "--delay": "0ms" } as React.CSSProperties} className="rise mb-6 inline-flex items-center gap-2 text-[15px] text-ink">
             <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true">
               <rect x="1" y="1" width="20" height="20" rx="6" fill="var(--primary)" />
