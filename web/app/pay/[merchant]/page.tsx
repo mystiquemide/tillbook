@@ -23,7 +23,7 @@ export default async function PayPage({ params }: { params: Promise<{ merchant: 
           <NotLive />
         ) : !valid ? (
           <>
-            <h1 className="mb-6 text-[32px] font-[550] tracking-[-0.03em]">Pay this merchant</h1>
+            <h1 className="mb-3 text-[14px] font-[400] text-ink-2">Pay this merchant</h1>
             <Notice title="This isn't a valid payment link." tone="error">
               Ask the merchant to send their Tillbook link again.
             </Notice>
