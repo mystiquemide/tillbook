@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackHome } from "@/components/BackHome";
 import { links } from "@/lib/links";
 
 export const metadata: Metadata = {
@@ -102,6 +103,7 @@ export default function RisksPage() {
       <SiteHeader variant="landing" />
       <main id="main" className="px-6 pt-16 pb-24 md:pt-24">
         <div className="mx-auto max-w-[720px]">
+          <BackHome className="mb-8" />
           <h1 className="rise text-[44px] leading-[1.08] font-[550] tracking-[-0.05em] md:text-[56px]">Risks and privacy</h1>
           <p className="mt-5 text-[18px] leading-[1.6] text-ink-2">
             What can go wrong when you use Tillbook, in plain words. Read this before you deposit or draw an advance.

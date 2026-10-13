@@ -408,7 +408,7 @@ const words: [string, string][] = [
 function Words() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="grid gap-3 md:grid-cols-2">
+    <div className="grid items-start gap-3 md:grid-cols-2">
       {words.map(([w, d], i) => (
         <div key={w} className={`${card} overflow-hidden`}>
           <button

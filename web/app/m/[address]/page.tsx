@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAddress, isAddress } from "viem";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackHome } from "@/components/BackHome";
 import { NotLive, Notice } from "@/components/app/Notice";
 import { addresses, isLive } from "@/lib/chain";
 import { short } from "@/lib/format";
@@ -26,6 +27,7 @@ export default async function MerchantRecordPage({ params }: Props) {
       <SiteHeader variant="app" />
       <main id="main" className="min-h-[calc(100dvh-65px)] bg-surface">
         <div className="mx-auto max-w-[1200px] px-4 py-10 md:px-6 md:py-14">
+          <BackHome className="mb-6" />
         {!isLive ? (
           <NotLive />
         ) : !valid ? (

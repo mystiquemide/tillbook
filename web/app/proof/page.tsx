@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackHome } from "@/components/BackHome";
 import { NotLive } from "@/components/app/Notice";
 import { isLive } from "@/lib/chain";
 import { ProofBoard } from "./ProofBoard";
@@ -14,6 +15,9 @@ export default function ProofPage() {
     <>
       <SiteHeader variant="landing" />
       <main id="main" className="bg-surface">
+        <div className="mx-auto max-w-[1200px] px-6 pt-8">
+          <BackHome />
+        </div>
         <section className="px-6 pt-16 pb-12 md:pt-24 md:pb-16">
           <div className="mx-auto max-w-[760px] text-center">
             <p className="rise mx-auto inline-flex h-9 items-center gap-2 rounded-full bg-white px-4 text-[15px] ring-1 ring-hairline">
