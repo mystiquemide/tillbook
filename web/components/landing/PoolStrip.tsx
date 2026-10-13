@@ -65,7 +65,7 @@ export function PoolStrip() {
               <a href={addressUrl(addresses.router!)} target="_blank" rel="noreferrer" className="hover:underline">
                 SplitRouter
               </a>{" "}
-              each time you load this page.
+              on Monad, refreshed every few seconds.
             </p>
           </>
         )}
