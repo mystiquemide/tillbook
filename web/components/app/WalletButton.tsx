@@ -15,6 +15,14 @@ export function WalletButton() {
   const { address, chainId, isConnected } = useAccount();
   const { connect, disconnect, isPending, failed, available } = useWalletConnect();
   const { switchChain, isPending: switching } = useSwitchChain();
+  // Embedded wallets can come up on another chain right after sign-in. Move them to Monad without
+  // making the person press a button, once per wrong chain so a refused prompt isn't repeated.
+  const tried = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (!isConnected || chainId === undefined || chainId === monad.id || tried.current === chainId) return;
+    tried.current = chainId;
+    switchChain({ chainId: monad.id });
+  }, [isConnected, chainId, switchChain]);
 
   if (!isConnected) {
     if (!available) {

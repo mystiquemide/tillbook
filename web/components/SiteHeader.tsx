@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { ButtonLink } from "./Button";
 import dynamic from "next/dynamic";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Wallet code loads only where a wallet button is shown, never on marketing pages.
 const WalletButton = dynamic(() => import("./app/WalletButton").then((m) => m.WalletButton), {
@@ -24,6 +26,8 @@ const tabs = [
 /** One header for every page, so height, width and alignment never shift between routes. */
 export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "app" | "checkout"; wallet?: boolean }) {
   const path = usePathname();
+  const [menu, setMenu] = useState(false);
+  useEffect(() => setMenu(false), [path]);
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-3 px-4 md:px-6">
@@ -67,7 +71,19 @@ export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "a
             </Link>
           </nav>
         )}
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-2">
+          {variant === "landing" && (
+            <button
+              type="button"
+              onClick={() => setMenu((v) => !v)}
+              aria-expanded={menu}
+              aria-controls="mobile-nav"
+              aria-label={menu ? "Close menu" : "Open menu"}
+              className="grid h-9 w-9 place-items-center rounded-full ring-1 ring-hairline md:hidden"
+            >
+              {menu ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
+            </button>
+          )}
           {variant === "landing" || !wallet ? (
             <ButtonLink href="/merchant" variant="dark" size="sm" className="h-9 px-4">
               Open app
@@ -77,6 +93,29 @@ export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "a
           )}
         </div>
       </div>
+      {variant === "landing" && menu && (
+        <nav id="mobile-nav" aria-label="Sections" className="border-t border-hairline bg-white px-4 pb-4 md:hidden">
+          <ul className="flex flex-col">
+            {sections.map((s) => (
+              <li key={s.slug}>
+                <SectionLink slug={s.slug} onClick={() => setMenu(false)} className="block border-b border-hairline py-3.5 text-[16px] text-ink">
+                  {s.label}
+                </SectionLink>
+              </li>
+            ))}
+            <li>
+              <Link href="/proof" className="block border-b border-hairline py-3.5 text-[16px] text-ink">
+                Proof
+              </Link>
+            </li>
+            <li>
+              <Link href="/start" className="block py-3.5 text-[16px] text-primary-ink">
+                How Tillbook works
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }
