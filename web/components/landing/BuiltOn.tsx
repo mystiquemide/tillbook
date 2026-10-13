@@ -41,6 +41,14 @@ const stack: Piece[] = [
   },
 ];
 
+const tools: { logo: string; name: string; href: string }[] = [
+  { logo: "/brands/solidity.svg", name: "Solidity", href: "https://soliditylang.org" },
+  { logo: "/brands/foundry.png", name: "Foundry", href: "https://getfoundry.sh" },
+  { logo: "/brands/viem.png", name: "viem", href: "https://viem.sh" },
+  { logo: "/brands/wagmi.svg", name: "wagmi", href: "https://wagmi.sh" },
+  { logo: "/brands/sourcify.svg", name: "Sourcify", href: "https://sourcify.dev" },
+];
+
 export function BuiltOn() {
   return (
     <section aria-labelledby="built-title" className="px-6 pt-20 md:pt-28">
@@ -70,6 +78,25 @@ export function BuiltOn() {
             </Reveal>
           ))}
         </ul>
+        <Reveal className="mt-8">
+          <p className="text-center text-[13px] text-ink-3">Written, tested and verified with</p>
+          <ul className="mt-4 flex flex-wrap justify-center gap-3">
+            {tools.map(({ logo, name, href }) => (
+              <li key={name}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-11 items-center gap-2.5 rounded-full bg-white px-4 text-[15px] text-ink ring-1 ring-hairline transition-colors hover:bg-surface"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logo} alt="" width={20} height={20} className="h-5 w-5 rounded-[4px] object-contain" />
+                  {name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );

@@ -14,6 +14,7 @@ const columns = [
   {
     title: "Product",
     items: [
+      { label: "Getting started", href: "/start" },
       { label: "For merchants", href: "/merchant" },
       { label: "For lenders", href: "/lend" },
       { label: "Live stats", href: "/stats" },
@@ -36,7 +37,6 @@ const columns = [
       { label: "Source code", href: links.repo },
       { label: "Contracts", href: links.contracts },
       { label: "Monad", href: links.monad },
-      { label: "Monad Metropolis", href: links.hackathon },
     ],
   },
 ];
@@ -72,6 +72,18 @@ export function Footer() {
             </ul>
           </div>
         ))}
+      </div>
+      <div className="border-t border-hairline">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-3 px-6 py-6 text-[13px] text-ink-3 md:flex-row md:items-center md:justify-between">
+          <p>© 2026 Tillbook. All rights reserved.</p>
+          <Link href="/proof" className="group inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 hover:text-ink">
+            <span>Verified contracts</span>
+            <span aria-hidden="true">·</span>
+            <span>1,336 tests</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-primary-ink group-hover:underline">Check it yourself</span>
+          </Link>
+        </div>
       </div>
     </footer>
   );

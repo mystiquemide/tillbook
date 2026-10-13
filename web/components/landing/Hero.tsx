@@ -8,12 +8,12 @@ export function Hero() {
     <section id="merchants" aria-label="Tillbook for merchants" className="scroll-mt-20 px-3 pt-4 md:px-6">
       <div className="mx-auto max-w-[1392px] overflow-hidden rounded-[32px] bg-surface">
         <div className="mx-auto flex max-w-[880px] flex-col items-center px-6 pt-16 text-center md:pt-24">
-          <p style={{ "--delay": "0ms" } as React.CSSProperties} className="rise mb-6 inline-flex h-9 items-center gap-2 rounded-full bg-white px-4 text-[15px] text-ink ring-1 ring-hairline">
-            <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true">
+          <p style={{ "--delay": "0ms" } as React.CSSProperties} className="rise mb-5 inline-flex items-center gap-3 text-[22px] font-[550] tracking-[-0.03em] text-ink md:text-[28px]">
+            <svg viewBox="0 0 22 22" aria-hidden="true" className="h-8 w-8 md:h-10 md:w-10">
               <rect x="1" y="1" width="20" height="20" rx="6" fill="var(--primary)" />
               <path d="M6 8h10M6 11.5h10M6 15h6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            Tillbook for merchants
+            Tillbook for Merchants
           </p>
           <h1 style={{ "--delay": "80ms" } as React.CSSProperties} className="rise text-[44px] leading-[1.08] font-[550] tracking-[-0.05em] text-balance md:text-[72px] md:leading-[1.1]">
             Your sales are your credit.
@@ -28,22 +28,16 @@ export function Hero() {
               Lend USDC
             </ButtonLink>
           </div>
-          <Link
-            href="/proof"
-            style={{ "--delay": "300ms" } as React.CSSProperties}
-            className="rise group mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[14px] text-ink-2 hover:text-ink"
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-positive" aria-hidden="true" />
-              Live on Monad mainnet
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>Verified contracts</span>
-            <span aria-hidden="true">·</span>
-            <span>1,336 tests</span>
-            <span aria-hidden="true">·</span>
-            <span className="text-primary-ink group-hover:underline">Check it yourself</span>
-          </Link>
+          <p style={{ "--delay": "270ms" } as React.CSSProperties} className="rise mt-5 text-[15px] text-ink-2">
+            New to crypto?{" "}
+            <Link href="/start" className="text-primary-ink underline-offset-4 hover:underline">
+              See how it works in 2 minutes
+            </Link>
+          </p>
+          <p style={{ "--delay": "300ms" } as React.CSSProperties} className="rise mt-6 inline-flex items-center gap-1.5 text-[14px] text-ink-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-positive" aria-hidden="true" />
+            Live on Monad mainnet
+          </p>
         </div>
 
         <div className="relative mt-14 md:mt-20">

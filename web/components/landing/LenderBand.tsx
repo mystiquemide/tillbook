@@ -51,9 +51,6 @@ export function LenderBand() {
           </div>
         </div>
       </div>
-      <p className="mx-auto mt-3 max-w-[1392px] px-4 text-center text-[12px] text-ink-3 md:text-right">
-        Lend screen from the same test run on a fork of Monad mainnet with live USDC.
-      </p>
     </section>
   );
 }
