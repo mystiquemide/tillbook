@@ -3,7 +3,7 @@ import { isAddress } from "viem";
 import { quoteMerchant, toJson, type ReadClient } from "@tillbook/underwriter";
 import { addresses, deployBlock, isLive, monad } from "@/lib/chain";
 import { publicClient, underwriterKey } from "@/lib/server";
-import { cachedLogs } from "@/lib/logs";
+import { cachedBlock, cachedLogs } from "@/lib/logs";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ address
   try {
     const block = await publicClient.getBlock();
     const result = await quoteMerchant({
-      client: { ...publicClient, getLogs: cachedLogs } as unknown as ReadClient,
+      client: { ...publicClient, getLogs: cachedLogs, getBlock: cachedBlock } as unknown as ReadClient,
       chainId: monad.id,
       pool: addresses.pool!,
       router: addresses.router!,

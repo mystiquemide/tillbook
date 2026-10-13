@@ -55,3 +55,16 @@ export async function cachedLogs<E extends AbiEvent>(args: {
   );
   return parseEventLogs({ abi: [args.event] as [E], logs: inRange, args: args.args as never, strict: true });
 }
+
+// Block timestamps never change, so each one is fetched once per server process.
+const timestamps = new Map<bigint, Promise<{ timestamp: bigint }>>();
+
+export function cachedBlock({ blockNumber }: { blockNumber: bigint }) {
+  let b = timestamps.get(blockNumber);
+  if (!b) {
+    b = logsClient.getBlock({ blockNumber }).then((x) => ({ timestamp: x.timestamp }));
+    b.catch(() => timestamps.delete(blockNumber));
+    timestamps.set(blockNumber, b);
+  }
+  return b;
+}
