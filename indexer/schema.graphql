@@ -1,0 +1,57 @@
+"""One sale paid through the SplitRouter."""
+type Payment {
+  id: ID!
+  merchant: String! @index
+  payer: String!
+  amount: BigInt!
+  repaid: BigInt!
+  ref: String!
+  blockNumber: BigInt! @index
+  timestamp: BigInt!
+  txHash: String!
+}
+
+"""One advance drawn from the LenderPool, and whether it has been repaid."""
+type Advance {
+  id: ID!
+  merchant: String! @index
+  amount: BigInt!
+  fee: BigInt!
+  holdbackBps: Int!
+  nonce: BigInt!
+  blockNumber: BigInt! @index
+  timestamp: BigInt!
+  txHash: String!
+  repaid: Boolean!
+  repaidTxHash: String
+}
+
+"""Running totals for one merchant."""
+type Merchant {
+  id: ID!
+  payments: Int!
+  volume: BigInt!
+  repaidVolume: BigInt!
+  advances: Int!
+  advancesRepaid: Int!
+  openAdvanceId: String
+}
+
+"""Net USDC a lender has put into the pool."""
+type Lender {
+  id: ID!
+  deposited: BigInt!
+  withdrawn: BigInt!
+}
+
+"""Network-wide totals, kept in a single row with id "global"."""
+type Totals {
+  id: ID!
+  payments: Int!
+  volume: BigInt!
+  merchants: Int!
+  advances: Int!
+  advanced: BigInt!
+  advancesRepaid: Int!
+  lastBlock: BigInt!
+}

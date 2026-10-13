@@ -43,6 +43,30 @@ jobs:
         working-directory: underwriter
         run: npm test
 
+  indexer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: indexer/pnpm-lock.yaml
+      - working-directory: indexer
+        run: pnpm install --frozen-lockfile
+      - name: Codegen
+        working-directory: indexer
+        run: pnpm codegen
+      - name: Typecheck
+        working-directory: indexer
+        run: npx tsc --noEmit
+      - name: Test
+        working-directory: indexer
+        run: pnpm test
+
   web:
     runs-on: ubuntu-latest
     steps:

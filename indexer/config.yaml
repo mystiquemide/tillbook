@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: tillbook-indexer
+description: Tillbook payments, advances, repayments and lender flows on Monad mainnet
+address_format: lowercase
+field_selection:
+  transaction_fields:
+    - hash
+contracts:
+  - name: SplitRouter
+    abi_file_path: abis/SplitRouter.json
+    events:
+      - event: Payment
+  - name: LenderPool
+    abi_file_path: abis/LenderPool.json
+    events:
+      - event: AdvanceDrawn
+      - event: AdvanceRepaid
+      - event: Deposit
+      - event: Withdraw
+chains:
+  - id: 143
+    start_block: 112997981
+    contracts:
+      - name: SplitRouter
+        address: "0x380A8e5A6BbE708E17397f3c31Cb806bfd920853"
+      - name: LenderPool
+        address: "0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE"
