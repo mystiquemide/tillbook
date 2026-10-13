@@ -23,7 +23,7 @@ export function WalletButton() {
     }
     return (
       <div className="flex items-center gap-3">
-        {failed && <span role="alert" className="hidden text-[13px] text-error md:inline">Wallet didn&apos;t connect. Try again.</span>}
+        {failed && <span role="alert" className="hidden text-[13px] text-error md:inline">{privyEnabled ? "Sign-in didn't finish. Try again." : "Wallet didn't connect. Try again."}</span>}
         <button
           type="button"
           onClick={connect}

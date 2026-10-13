@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toHex } from "viem";
-import { useAccount, useReadContracts, useSwitchChain } from "wagmi";
+import { useAccount, useBalance, useReadContracts, useSwitchChain } from "wagmi";
 import { useWalletConnect } from "@/lib/useWalletConnect";
 import { privyEnabled } from "@/lib/wagmi";
 import { TxStatus } from "@/components/app/TxStatus";
@@ -37,12 +37,15 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
   const quote = reads.data?.[2]?.result as readonly [bigint, bigint] | undefined;
   const toPool = amount !== null && quote ? quote[0] : 0n;
 
+  const gas = useBalance({ address, query: { enabled: !!address } });
   const busy = tx.state.status === "signing" || tx.state.status === "pending";
   const needsApproval = amount !== null && allowance !== undefined && allowance < amount;
   let problem: string | null = null;
   if (input && amount === null) problem = "Enter an amount like 25 or 25.50.";
   else if (amount !== null && balance !== undefined && amount > balance)
     problem = `You have ${usdc(balance)} USDC. You need ${usdc(amount - balance)} more.`;
+  else if (amount !== null && gas.data?.value === 0n)
+    problem = "This wallet has no MON for the network fee. Add a little MON on Monad, then try again.";
   if (address && address.toLowerCase() === merchant.toLowerCase()) problem = "This is your own payment link. Pay from a different wallet.";
 
   async function pay() {
@@ -126,7 +129,7 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
             In your wallet: <span className="font-mono">{usdc(balance)}</span>
           </>
         ) : (
-          "Connect a wallet to see your balance."
+          privyEnabled ? "Sign in to see your balance." : "Connect a wallet to see your balance."
         )}
       </p>
 

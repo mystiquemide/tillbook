@@ -49,7 +49,7 @@ export function ConnectPrompt({
         <p className="mt-5 text-[18px] font-[450]">{title}</p>
         <p className="mt-1.5 text-[15px] leading-[1.6] text-ink-2">{body}</p>
         <div className="mt-5 grid">{button}</div>
-        {error && <p role="alert" className="mt-3 text-[13px] text-error">Wallet didn&apos;t connect. Try again.</p>}
+        {error && <p role="alert" className="mt-3 text-[13px] text-error">{privyEnabled ? "Sign-in didn't finish. Try again." : "Wallet didn't connect. Try again."}</p>}
       </div>
     );
 
@@ -72,7 +72,7 @@ export function ConnectPrompt({
               {privyEnabled ? "Email, Google or any browser wallet" : "MetaMask, Rabby or any browser wallet"}
             </span>
           </div>
-          {error && <p role="alert" className="mt-4 text-[14px] text-error">Wallet didn&apos;t connect. Try again.</p>}
+          {error && <p role="alert" className="mt-4 text-[14px] text-error">{privyEnabled ? "Sign-in didn't finish. Try again." : "Wallet didn't connect. Try again."}</p>}
         </div>
         <ul className="space-y-3 self-center">
           {(points ?? []).map((p) => (

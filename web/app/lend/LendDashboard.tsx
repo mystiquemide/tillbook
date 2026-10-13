@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { formatUnits } from "viem";
-import { useAccount, useReadContracts } from "wagmi";
+import { useAccount, useReadContracts, useBalance } from "wagmi";
 import { NotLive, Notice, card } from "@/components/app/Notice";
+import { privyEnabled } from "@/lib/wagmi";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
 import { CountUp } from "@/components/motion/CountUp";
@@ -107,8 +108,8 @@ function Live() {
           {!isConnected || !address ? (
             <ConnectPrompt
               compact
-              title="Connect to deposit"
-              body="Pool numbers are public. Connect a wallet with USDC on Monad to deposit, track your share and withdraw."
+              title={privyEnabled ? "Sign in to deposit" : "Connect to deposit"}
+              body={`Pool numbers are public. ${privyEnabled ? "Sign in" : "Connect a wallet"} with USDC on Monad to deposit, track your share and withdraw.`}
             />
           ) : chainId !== monad.id ? (
             <Notice title="Your wallet is on another network." tone="warning">
@@ -191,6 +192,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
   const net = history.data ? BigInt(history.data.deposited) - BigInt(history.data.withdrawn) : undefined;
   const earned = worth !== undefined && net !== undefined ? worth - net : undefined;
 
+  const gas = useBalance({ address });
   const amount = parseUsdc(input);
   const limit = mode === "deposit" ? balance : maxWithdraw;
   const busy = tx.state.status === "signing" || tx.state.status === "pending";
@@ -198,6 +200,8 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
 
   let problem: string | null = null;
   if (input && amount === null) problem = "Enter an amount like 25 or 25.50.";
+  else if (amount !== null && gas.data?.value === 0n)
+    problem = "This wallet has no MON for the network fee. Add a little MON on Monad, then try again.";
   else if (amount !== null && limit !== undefined && amount > limit) {
     problem =
       mode === "deposit"

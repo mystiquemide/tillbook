@@ -47,7 +47,7 @@ export function ProofBoard() {
   const rows: Row[] = [
     {
       claim: "LenderPool is deployed on Monad mainnet",
-      detail: poolCode.data ? `${bytes(poolCode.data).toLocaleString("en-US")} bytes of verified code at ${short(pool)}` : "Reading...",
+      detail: poolCode.data ? `${bytes(poolCode.data).toLocaleString("en-US")} bytes of verified code at ${short(pool)}` : "Checking on Monad...",
       status: status(poolCode.isFetched, bytes(poolCode.data) > 0),
       links: [
         { label: "Monadscan", href: addressUrl(pool) },
@@ -57,7 +57,7 @@ export function ProofBoard() {
     },
     {
       claim: "SplitRouter is deployed on Monad mainnet",
-      detail: routerCode.data ? `${bytes(routerCode.data).toLocaleString("en-US")} bytes of verified code at ${short(router)}` : "Reading...",
+      detail: routerCode.data ? `${bytes(routerCode.data).toLocaleString("en-US")} bytes of verified code at ${short(router)}` : "Checking on Monad...",
       status: status(routerCode.isFetched, bytes(routerCode.data) > 0),
       links: [
         { label: "Monadscan", href: addressUrl(router) },
@@ -67,13 +67,13 @@ export function ProofBoard() {
     },
     {
       claim: "The pool holds native USDC, nothing else",
-      detail: asset ? `asset() returns ${short(asset)}, Circle's USDC on Monad` : "Reading...",
+      detail: asset ? `asset() returns ${short(asset)}, Circle's USDC on Monad` : "Checking on Monad...",
       status: status(!!asset, !!asset && isAddressEqual(asset, addresses.token)),
       links: [{ label: "USDC", href: addressUrl(addresses.token) }],
     },
     {
       claim: "The router pays into this pool, in the same USDC",
-      detail: routerPool && routerToken ? `pool() is ${short(routerPool)} and token() is ${short(routerToken)}` : "Reading...",
+      detail: routerPool && routerToken ? `pool() is ${short(routerPool)} and token() is ${short(routerToken)}` : "Checking on Monad...",
       status: status(
         !!routerPool && !!routerToken,
         !!routerPool && !!routerToken && isAddressEqual(routerPool, pool) && isAddressEqual(routerToken, addresses.token),
@@ -82,13 +82,13 @@ export function ProofBoard() {
     },
     {
       claim: "No advance can exceed 5,000 USDC",
-      detail: cap !== undefined ? `maxAdvance() returns ${usdc(cap)} USDC, fixed at deploy` : "Reading...",
+      detail: cap !== undefined ? `maxAdvance() returns ${usdc(cap)} USDC, fixed at deploy` : "Checking on Monad...",
       status: status(cap !== undefined, cap === CAP),
       links: [{ label: "Code", href: `${links.repo}/blob/main/contracts/src/LenderPool.sol` }],
     },
     {
       claim: "Offers are signed by one fixed key, which can't move funds",
-      detail: signer ? `underwriter() is ${short(signer)}. It can only sign offers, never withdraw.` : "Reading...",
+      detail: signer ? `underwriter() is ${short(signer)}. It can only sign offers, never withdraw.` : "Checking on Monad...",
       status: status(!!signer, !!signer && !isAddressEqual(signer, zeroAddress)),
       links: signer ? [{ label: "Signer", href: addressUrl(signer) }] : [],
     },
@@ -97,7 +97,7 @@ export function ProofBoard() {
       detail:
         total !== undefined && idle !== undefined && out !== undefined
           ? `${usdc(total)} total = ${usdc(idle)} free + ${usdc(out)} lent out`
-          : "Reading...",
+          : "Checking on Monad...",
       status: status(total !== undefined && idle !== undefined && out !== undefined, total === (idle ?? 0n) + (out ?? 0n)),
       links: [{ label: "Pool", href: addressUrl(pool) }],
     },

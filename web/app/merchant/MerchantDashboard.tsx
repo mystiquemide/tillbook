@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { formatUnits } from "viem";
 import { useEffect, useState } from "react";
-import { useAccount, useReadContracts } from "wagmi";
+import { useAccount, useBalance, useReadContracts } from "wagmi";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { NotLive, Notice, card } from "@/components/app/Notice";
 import { PageHeader } from "@/components/app/PageHeader";
+import { privyEnabled } from "@/lib/wagmi";
 import { Store } from "lucide-react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { poolAbi } from "@/lib/abi";
@@ -25,8 +26,12 @@ export function MerchantDashboard() {
     return (
       <Intro>
         <ConnectPrompt
-          title="Connect the wallet you get paid to"
-          body="Your ledger, your offer and your payment link all come from that address on Monad."
+          title={privyEnabled ? "Sign in to see your ledger" : "Connect the wallet you get paid to"}
+          body={
+            privyEnabled
+              ? "Use the account customers pay. Your ledger, your offer and your payment link all come from its Monad address."
+              : "Your ledger, your offer and your payment link all come from that address on Monad."
+          }
           points={[
             "Every sale paid to you through Tillbook, with its transaction",
             "Your advance offer, and exactly how it's worked out",
@@ -266,6 +271,9 @@ function OfferPanel({
 }) {
   const { state, send, reset } = tx;
   const now = useNow();
+  const { address } = useAccount();
+  const gas = useBalance({ address });
+  const noGas = gas.data?.value === 0n;
 
   if (!response.eligible) {
     const r = reasons[response.reason]!;
@@ -300,9 +308,14 @@ function OfferPanel({
         </button>
       ) : (
         <>
+          {noGas && (
+            <p className="mt-6 text-[14px] text-warning">
+              This wallet has no MON for the network fee. Add a little MON on Monad, then draw.
+            </p>
+          )}
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || noGas}
             onClick={async () => {
               const ok = await send("Draw advance", {
                 address: addresses.pool!,
