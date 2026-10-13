@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { toHex } from "viem";
-import { useAccount, useConnect, useReadContracts, useSwitchChain } from "wagmi";
+import { useAccount, useReadContracts, useSwitchChain } from "wagmi";
+import { useWalletConnect } from "@/lib/useWalletConnect";
+import { privyEnabled } from "@/lib/wagmi";
 import { TxStatus } from "@/components/app/TxStatus";
 import { erc20Abi, routerAbi } from "@/lib/abi";
 import { addressUrl, addresses, monad } from "@/lib/chain";
@@ -16,7 +18,7 @@ const primary =
 
 export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`; requested?: string }) {
   const { address, isConnected, chainId } = useAccount();
-  const { connect, connectors, isPending: connecting } = useConnect();
+  const { connect, isPending: connecting } = useWalletConnect();
   const { switchChain, isPending: switching } = useSwitchChain();
   const [input, setInput] = useState(requested);
   const [paid, setPaid] = useState<{ amount: bigint; toPool: bigint } | null>(null);
@@ -135,11 +137,11 @@ export function Checkout({ merchant, requested = "" }: { merchant: `0x${string}`
         {!isConnected ? (
           <button
             type="button"
-            disabled={connecting || connectors.length === 0}
-            onClick={() => connect({ connector: connectors[0]!, chainId: monad.id })}
+            disabled={connecting}
+            onClick={connect}
             className={primary}
           >
-            {connecting ? "Connecting..." : "Connect wallet to pay"}
+            {connecting ? "Connecting..." : privyEnabled ? "Sign in to pay" : "Connect wallet to pay"}
           </button>
         ) : chainId !== monad.id ? (
           <button type="button" disabled={switching} onClick={() => switchChain({ chainId: monad.id })} className={primary}>

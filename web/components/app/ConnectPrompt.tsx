@@ -1,9 +1,8 @@
 "use client";
 
 import { ArrowRight, Eye, Lock, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useConnect } from "wagmi";
-import { monad } from "@/lib/chain";
+import { useWalletConnect } from "@/lib/useWalletConnect";
+import { privyEnabled } from "@/lib/wagmi";
 import { card } from "./Notice";
 
 /** Shown before a wallet is connected. Explains what connecting does, and what it can't do. */
@@ -18,18 +17,16 @@ export function ConnectPrompt({
   points?: string[];
   compact?: boolean;
 }) {
-  const { connect, connectors, isPending, error } = useConnect();
-  const [hasProvider, setHasProvider] = useState(true);
-  useEffect(() => setHasProvider("ethereum" in window), []);
+  const { connect, isPending, failed: error, available: hasProvider } = useWalletConnect();
 
   const button = hasProvider ? (
     <button
       type="button"
-      onClick={() => connect({ connector: connectors[0]!, chainId: monad.id })}
+      onClick={connect}
       disabled={isPending}
       className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-[16px] font-[450] text-white transition-colors hover:bg-primary-ink disabled:opacity-60"
     >
-      {isPending ? "Connecting..." : "Connect wallet"}
+      {isPending ? "Connecting..." : privyEnabled ? "Sign in to continue" : "Connect wallet"}
       {!isPending && <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />}
     </button>
   ) : (
@@ -71,7 +68,9 @@ export function ConnectPrompt({
           <p className="mt-3 max-w-[460px] text-[16px] leading-[1.6] text-ink-2">{body}</p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             {button}
-            <span className="text-[14px] text-ink-3">MetaMask, Rabby or any browser wallet</span>
+            <span className="text-[14px] text-ink-3">
+              {privyEnabled ? "Email, Google or any browser wallet" : "MetaMask, Rabby or any browser wallet"}
+            </span>
           </div>
           {error && <p role="alert" className="mt-4 text-[14px] text-error">Wallet didn&apos;t connect. Try again.</p>}
         </div>
@@ -89,7 +88,9 @@ export function ConnectPrompt({
               <Lock size={14} strokeWidth={2} />
             </span>
             <span className="text-[15px] leading-[1.5]">
-              Connecting only reads your address. Nothing moves until you confirm a transaction in your wallet.
+              {privyEnabled
+                ? "No wallet? Signing in with email creates one for you. Nothing moves until you confirm a transaction."
+                : "Connecting only reads your address. Nothing moves until you confirm a transaction in your wallet."}
             </span>
           </li>
         </ul>
