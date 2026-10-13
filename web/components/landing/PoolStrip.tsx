@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { addressUrl, addresses, isLive } from "@/lib/chain";
+import Link from "next/link";
 import { usdc } from "@/lib/format";
 import { CountUp } from "@/components/motion/CountUp";
 
@@ -61,6 +62,16 @@ export function PoolStrip() {
                 format={(n) => `${whole(n)} of ${stats.data?.advances ?? 0}`}
               />
             </dl>
+            {stats.data && stats.data.payments === 0 && BigInt(stats.data.totalAssets) === 0n && (
+              <p className="mx-auto mt-8 max-w-[620px] rounded-[16px] bg-surface px-5 py-4 text-center text-[15px] leading-[1.6] text-ink-2">
+                Tillbook is newly live on Monad mainnet. The first lender deposit opens the pool for the first merchant
+                advance. Until then, you can{" "}
+                <Link href="/proof" className="text-primary-ink hover:underline">
+                  check the contracts live
+                </Link>{" "}
+                and see the full loop run on a mainnet fork in the screenshots above.
+              </p>
+            )}
             <p className="mt-8 text-center text-[13px] text-ink-3">
               Read from{" "}
               <a href={addressUrl(addresses.pool!)} target="_blank" rel="noreferrer" className="hover:underline">

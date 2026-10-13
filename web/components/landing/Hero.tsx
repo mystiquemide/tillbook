@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ButtonLink } from "../Button";
 import { BrowserFrame } from "./BrowserFrame";
 
@@ -27,6 +28,22 @@ export function Hero() {
               Lend USDC
             </ButtonLink>
           </div>
+          <Link
+            href="/proof"
+            style={{ "--delay": "300ms" } as React.CSSProperties}
+            className="rise group mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[14px] text-ink-2 hover:text-ink"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-positive" aria-hidden="true" />
+              Live on Monad mainnet
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>Verified contracts</span>
+            <span aria-hidden="true">·</span>
+            <span>1,336 tests</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-primary-ink group-hover:underline">Check it yourself</span>
+          </Link>
         </div>
 
         <div className="relative mt-14 md:mt-20">

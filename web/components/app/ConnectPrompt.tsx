@@ -10,11 +10,14 @@ export function ConnectPrompt({
   title,
   body,
   points,
+  cta,
   compact = false,
 }: {
   title: string;
   body: string;
   points?: string[];
+  /** Button label in sign-in mode. It should name the outcome, e.g. "Open my ledger". */
+  cta?: string;
   compact?: boolean;
 }) {
   const { connect, isPending, failed: error, available: hasProvider } = useWalletConnect();
@@ -26,7 +29,7 @@ export function ConnectPrompt({
       disabled={isPending}
       className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-[16px] font-[450] text-white transition-colors hover:bg-primary-ink disabled:opacity-60"
     >
-      {isPending ? "Connecting..." : privyEnabled ? "Sign in to continue" : "Connect wallet"}
+      {isPending ? "Connecting..." : privyEnabled ? (cta ?? "Sign in to continue") : "Connect wallet"}
       {!isPending && <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />}
     </button>
   ) : (

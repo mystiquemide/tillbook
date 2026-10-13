@@ -7,6 +7,7 @@ import { formatUnits } from "viem";
 import { useAccount, useReadContracts, useBalance } from "wagmi";
 import { NotLive, Notice, card } from "@/components/app/Notice";
 import { privyEnabled } from "@/lib/wagmi";
+import { RiskNote } from "@/components/app/RiskNote";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
 import { CountUp } from "@/components/motion/CountUp";
@@ -75,11 +76,16 @@ function Live() {
           </Notice>
         ) : (
           <dl className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-            <Stat icon={Wallet} label="Total in pool" value={total} />
-            <Stat icon={CircleDollarSign} label="Free to lend or withdraw" value={idle} />
-            <Stat icon={HandCoins} label="Lent to merchants" value={out} />
-            <Stat icon={TrendingUp} label="Return since launch" value={price} percent />
+            <Stat icon={Wallet} label="Total pool assets" value={total} />
+            <Stat icon={CircleDollarSign} label="Available liquidity" value={idle} />
+            <Stat icon={HandCoins} label="Outstanding advances" value={out} />
+            <Stat icon={TrendingUp} label="Realized return since launch" value={price} percent />
           </dl>
+        )}
+        {total === 0n && (
+          <p className="mt-4 rounded-[14px] bg-primary-tint px-4 py-3 text-[14px] leading-[1.55] text-primary-ink">
+            The pool is new and has no deposits yet. The first deposit is what lets the first merchant draw an advance.
+          </p>
         )}
         <p className="mt-3 text-[13px] text-ink-3">
           Live from{" "}
@@ -91,7 +97,7 @@ function Live() {
               . Each advance is capped onchain at <span className="font-mono">{usdc(cap)}</span> USDC
             </>
           )}
-          .
+          . Return is the change in value of one pool share since launch, from fees merchants have actually repaid.
         </p>
       </section>
 
@@ -106,6 +112,7 @@ function Live() {
           {!isConnected || !address ? (
             <ConnectPrompt
               compact
+              cta="Sign in to deposit"
               title={privyEnabled ? "Sign in to deposit" : "Connect to deposit"}
               body={`Pool numbers are public. ${privyEnabled ? "Sign in" : "Connect a wallet"} with USDC on Monad to deposit, track your share and withdraw.`}
             />
@@ -116,6 +123,7 @@ function Live() {
           ) : (
             <Position address={address} idle={idle} onChange={refreshPool} />
           )}
+          <RiskNote />
         </aside>
       </div>
     </div>
@@ -151,7 +159,10 @@ function Stat({
             format={(n) => `${value >= 1_000_000n ? "+" : ""}${n.toFixed(2)}%`}
           />
         ) : (
-          <CountUp value={Number(value) / 1e6} format={(n) => usdc(BigInt(Math.round(n * 1e6)))} />
+          <>
+            <CountUp value={Number(value) / 1e6} format={(n) => usdc(BigInt(Math.round(n * 1e6)))} />
+            <span className="ml-1.5 font-sans text-[14px] tracking-normal text-ink-3">USDC</span>
+          </>
         )}
       </dd>
     </div>

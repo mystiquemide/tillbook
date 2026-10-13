@@ -1,11 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Check, ExternalLink, Loader2, X } from "lucide-react";
+import { Check, Copy, ExternalLink, Loader2, RefreshCw, X } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { isAddressEqual, zeroAddress, type Address } from "viem";
-import { useBytecode, useReadContracts } from "wagmi";
+import { useBlockNumber, useBytecode, useReadContracts } from "wagmi";
 import { Reveal } from "@/components/motion/Reveal";
 import { poolAbi, routerAbi } from "@/lib/abi";
 import { addressUrl, addresses, txUrl } from "@/lib/chain";
@@ -16,7 +17,7 @@ const sourcify = (a: string) => `https://sourcify.dev/#/lookup/${a}`;
 const CAP = 5_000_000_000n;
 
 type Status = "pass" | "fail" | "loading";
-type Row = { claim: string; detail: ReactNode; status: Status; links: { label: string; href: string }[] };
+type Row = { claim: string; meaning: string; detail: ReactNode; status: Status; copy?: string; links: { label: string; href: string }[] };
 
 /** Every claim on this page is re-checked against Monad in the visitor's browser. */
 export function ProofBoard() {
@@ -36,6 +37,9 @@ export function ProofBoard() {
       { address: router, abi: routerAbi, functionName: "token" },
     ],
   });
+  const block = useBlockNumber();
+  const refresh = () => Promise.all([poolCode.refetch(), routerCode.refetch(), reads.refetch(), block.refetch()]);
+  const checking = reads.isFetching || poolCode.isFetching || routerCode.isFetching;
   const r = reads.data?.map((x) => x.result);
   const [asset, signer, cap, total, idle, out, routerPool, routerToken] = (r ?? []) as [
     Address?, Address?, bigint?, bigint?, bigint?, bigint?, Address?, Address?,
@@ -47,8 +51,10 @@ export function ProofBoard() {
   const rows: Row[] = [
     {
       claim: "LenderPool is deployed on Monad mainnet",
+      meaning: "The lender pool is real, on mainnet, and its code matches the published source.",
       detail: poolCode.data ? `${bytes(poolCode.data).toLocaleString("en-US")} bytes of verified code at ${short(pool)}` : "Checking on Monad...",
       status: status(poolCode.isFetched, bytes(poolCode.data) > 0),
+      copy: pool,
       links: [
         { label: "Monadscan", href: addressUrl(pool) },
         { label: "Sourcify", href: sourcify(pool) },
@@ -57,8 +63,10 @@ export function ProofBoard() {
     },
     {
       claim: "SplitRouter is deployed on Monad mainnet",
+      meaning: "The payment contract customers pay through is real and verified too.",
       detail: routerCode.data ? `${bytes(routerCode.data).toLocaleString("en-US")} bytes of verified code at ${short(router)}` : "Checking on Monad...",
       status: status(routerCode.isFetched, bytes(routerCode.data) > 0),
+      copy: router,
       links: [
         { label: "Monadscan", href: addressUrl(router) },
         { label: "Sourcify", href: sourcify(router) },
@@ -67,12 +75,14 @@ export function ProofBoard() {
     },
     {
       claim: "The pool holds native USDC, nothing else",
+      meaning: "Lenders deposit and earn in real dollars, not a wrapped or custom token.",
       detail: asset ? `asset() returns ${short(asset)}, Circle's USDC on Monad` : "Checking on Monad...",
       status: status(!!asset, !!asset && isAddressEqual(asset, addresses.token)),
       links: [{ label: "USDC", href: addressUrl(addresses.token) }],
     },
     {
       claim: "The router pays into this pool, in the same USDC",
+      meaning: "Repayments from every sale land in this exact pool, nowhere else.",
       detail: routerPool && routerToken ? `pool() is ${short(routerPool)} and token() is ${short(routerToken)}` : "Checking on Monad...",
       status: status(
         !!routerPool && !!routerToken,
@@ -82,18 +92,21 @@ export function ProofBoard() {
     },
     {
       claim: "No advance can exceed 5,000 USDC",
+      meaning: "One merchant can never drain the whole pool.",
       detail: cap !== undefined ? `maxAdvance() returns ${usdc(cap)} USDC, fixed at deploy` : "Checking on Monad...",
       status: status(cap !== undefined, cap === CAP),
       links: [{ label: "Code", href: `${links.repo}/blob/main/contracts/src/LenderPool.sol` }],
     },
     {
       claim: "Offers are signed by one fixed key, which can't move funds",
+      meaning: "The signer can approve offers but can never withdraw lender money.",
       detail: signer ? `underwriter() is ${short(signer)}. It can only sign offers, never withdraw.` : "Checking on Monad...",
       status: status(!!signer, !!signer && !isAddressEqual(signer, zeroAddress)),
       links: signer ? [{ label: "Signer", href: addressUrl(signer) }] : [],
     },
     {
       claim: "Every USDC in the pool is accounted for",
+      meaning: "Every dollar is either available to withdraw or in an open advance.",
       detail:
         total !== undefined && idle !== undefined && out !== undefined
           ? `${usdc(total)} total = ${usdc(idle)} free + ${usdc(out)} lent out`
@@ -113,12 +126,32 @@ export function ProofBoard() {
             <h2 id="checks-title" className="text-[28px] leading-[1.15] font-[550] tracking-[-0.03em]">
               Live contract checks
             </h2>
-            <p className="mt-2 text-[15px] text-ink-2">Read from Monad mainnet just now, in your browser.</p>
+            <p className="mt-2 text-[15px] text-ink-2">
+              {block.data !== undefined && reads.dataUpdatedAt ? (
+                <>
+                  Checked at block <span className="font-mono text-ink">#{block.data.toLocaleString("en-US")}</span>,{" "}
+                  {new Date(reads.dataUpdatedAt).toUTCString().replace("GMT", "UTC")}, in your browser.
+                </>
+              ) : (
+                "Reading from Monad mainnet in your browser..."
+              )}
+            </p>
           </div>
-          <p className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[14px] ring-1 ring-hairline">
-            <span className="live-dot h-2 w-2 rounded-full bg-positive" aria-hidden="true" />
-            <span className="font-mono">{passed}</span> of <span className="font-mono">{rows.length}</span> passing
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[14px] ring-1 ring-hairline">
+              <span className="live-dot h-2 w-2 rounded-full bg-positive" aria-hidden="true" />
+              <span className="font-mono">{passed}</span> of <span className="font-mono">{rows.length}</span> passing
+            </p>
+            <button
+              type="button"
+              onClick={refresh}
+              disabled={checking}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[14px] ring-1 ring-hairline transition-colors hover:bg-surface disabled:opacity-60"
+            >
+              <RefreshCw size={14} className={checking ? "animate-spin" : ""} aria-hidden="true" />
+              {checking ? "Checking..." : "Check again"}
+            </button>
+          </div>
         </div>
         <ul className="mt-6 divide-y divide-hairline overflow-hidden rounded-[20px] border border-hairline bg-white">
           {rows.map((row) => (
@@ -126,9 +159,11 @@ export function ProofBoard() {
               <StatusIcon status={row.status} />
               <div className="min-w-0 flex-1">
                 <p className="text-[16px] font-[450]">{row.claim}</p>
-                <p className="mt-1 font-mono text-[13px] break-words text-ink-2">{row.detail}</p>
+                <p className="mt-0.5 text-[14px] text-ink-2">{row.meaning}</p>
+                <p className="mt-1.5 font-mono text-[12px] break-words text-ink-3">{row.detail}</p>
               </div>
               <div className="flex flex-wrap gap-2">
+                {row.copy && <CopyPill value={row.copy} />}
                 {row.links.map((l) => (
                   <a
                     key={l.label}
@@ -194,7 +229,46 @@ export function ProofBoard() {
           </div>
         </div>
       </Reveal>
+
+      <Reveal as="section" aria-labelledby="next-title" className={`rounded-[28px] bg-dark-band px-6 py-14 text-center text-white md:py-16`}>
+        <h2 id="next-title" className="text-[32px] leading-[1.1] font-[550] tracking-[-0.04em] md:text-[44px]">
+          Seen enough? Put it to work.
+        </h2>
+        <p className="mx-auto mt-4 max-w-[520px] text-[16px] leading-[1.6] text-white/70">
+          Merchants start building a record with their first sale. Lenders fund the advances those records unlock.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link href="/merchant" className="inline-flex h-12 items-center rounded-full bg-white px-6 text-[16px] text-ink hover:bg-white/90">
+            Build your sales record
+          </Link>
+          <Link href="/lend" className="inline-flex h-12 items-center rounded-full bg-white/10 px-6 text-[16px] text-white hover:bg-white/15">
+            Fund the lender pool
+          </Link>
+          <Link href="/risks" className="inline-flex h-12 items-center rounded-full px-6 text-[16px] text-white/80 underline-offset-4 hover:underline">
+            Read the risks
+          </Link>
+        </div>
+      </Reveal>
     </div>
+  );
+}
+
+function CopyPill({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        await navigator.clipboard.writeText(value);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      aria-label={`Copy address ${value}`}
+      className="inline-flex h-8 items-center gap-1 rounded-full bg-surface px-3 text-[13px] text-ink-2 ring-1 ring-hairline transition-colors hover:text-ink"
+    >
+      {copied ? <Check size={12} className="text-positive" aria-hidden="true" /> : <Copy size={12} aria-hidden="true" />}
+      {copied ? "Copied" : "Copy"}
+    </button>
   );
 }
 

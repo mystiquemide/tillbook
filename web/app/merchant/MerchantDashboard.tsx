@@ -25,6 +25,7 @@ export function MerchantDashboard() {
     return (
       <Intro>
         <ConnectPrompt
+          cta="Open my ledger"
           title={privyEnabled ? "Sign in to see your ledger" : "Connect the wallet you get paid to"}
           body={
             privyEnabled
