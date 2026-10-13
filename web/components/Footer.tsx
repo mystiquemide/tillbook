@@ -47,8 +47,18 @@ export function Footer() {
         <div className="space-y-4">
           <Logo />
           <p className="max-w-[320px] text-[14px] leading-[1.6] text-ink-2">
-            Merchant credit on Monad. Your sales history is public, portable and yours.
+            Merchant credit on Monad. Your sales history is portable and yours.
           </p>
+          <a
+            href={links.x}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Tillbook on X"
+            className="inline-flex h-9 items-center gap-2 rounded-full px-3.5 text-[14px] text-ink ring-1 ring-hairline transition-colors hover:bg-surface"
+          >
+            <XLogo />
+            @tillbook_xyz
+          </a>
         </div>
         {columns.map((c) => (
           <div key={c.title}>
@@ -85,5 +95,13 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function XLogo() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   );
 }
