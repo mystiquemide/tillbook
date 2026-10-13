@@ -6,11 +6,12 @@ import { addresses, deployBlock, monad } from "./chain";
 // Public Monad RPCs cap eth_getLogs at 100 blocks; this endpoint allows 1,000.
 const logsClient = createPublicClient({
   chain: monad,
-  transport: http(process.env.RPC_LOGS_URL || "https://rpc3.monad.xyz"),
+  // Public RPCs rate-limit shared cloud IPs, so back off and retry instead of failing the request.
+  transport: http(process.env.RPC_LOGS_URL || "https://rpc3.monad.xyz", { retryCount: 6, retryDelay: 300 }),
   cacheTime: 0,
 });
 const CHUNK = BigInt(process.env.LOG_CHUNK_SIZE || "1000");
-const PARALLEL = 8;
+const PARALLEL = 4;
 
 // Every pool and router log since deploy, kept in memory and extended on each read.
 const logs: Log[] = [];
