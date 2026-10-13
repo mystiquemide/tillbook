@@ -1,7 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { Hero } from "./Hero";
-import { PoolStrip } from "./PoolStrip";
 import { LenderBand } from "./LenderBand";
 import { Trust } from "./Trust";
 import { Faq } from "./Faq";
@@ -15,7 +14,6 @@ export function Landing({ section }: { section?: string }) {
       <SiteHeader variant="landing" />
       <main id="main" tabIndex={-1} className="outline-none">
         <Hero />
-        <PoolStrip />
         <LenderBand />
         <Trust />
         <BuiltOn />

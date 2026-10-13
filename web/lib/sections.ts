@@ -1,7 +1,6 @@
 /** Landing page sections that have their own clean URL, e.g. /faq. */
 export const sections = [
   { slug: "merchants", id: "merchants", label: "Merchants", title: "For merchants" },
-  { slug: "stats", id: "network", label: "Live stats", title: "Live stats" },
   { slug: "lenders", id: "lenders", label: "Lenders", title: "For lenders" },
   { slug: "trust", id: "trust", label: "Trust", title: "Trust" },
   { slug: "faq", id: "faq", label: "FAQ", title: "Questions" },

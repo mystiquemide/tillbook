@@ -17,7 +17,6 @@ const columns = [
       { label: "Getting started", href: "/start" },
       { label: "For merchants", href: "/merchant" },
       { label: "For lenders", href: "/lend" },
-      { label: "Live stats", href: "/stats" },
       { label: "Trust", href: "/trust" },
       { label: "Proof", href: "/proof" },
       { label: "FAQ", href: "/faq" },

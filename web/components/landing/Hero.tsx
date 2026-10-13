@@ -59,9 +59,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-      <p className="mx-auto mt-3 max-w-[1392px] px-4 text-center text-[12px] text-ink-3 md:text-right">
-        Dashboard from a test run on a fork of Monad mainnet with live USDC.
-      </p>
     </section>
   );
 }
