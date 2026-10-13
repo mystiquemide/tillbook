@@ -45,7 +45,7 @@ export default function OpenGraphImage() {
               Your sales are your credit.
             </div>
             <div style={{ fontSize: 32, color: "#5f5c5c", lineHeight: 1.35, maxWidth: 900 }}>
-              Take USDC payments on Monad. Every sale builds a public record. Draw an advance that repays itself from each sale.
+              Take USDC payments on Monad. Every sale builds a credit record you own. Draw an advance that repays itself from each sale.
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

@@ -19,7 +19,7 @@ export function Hero() {
             Your sales are your credit.
           </h1>
           <p style={{ "--delay": "160ms" } as React.CSSProperties} className="rise mt-6 max-w-[620px] text-[17px] leading-[1.55] text-ink-2 md:text-[19px]">
-            Take payments in USDC on Monad. Every sale builds a record any lender can see. Draw an advance and repay it a
+            Take payments in USDC on Monad. Every sale builds a credit record you own and share. Draw an advance and repay it a
             little from each sale.
           </p>
           <div style={{ "--delay": "240ms" } as React.CSSProperties} className="rise mt-9 flex flex-wrap justify-center gap-3">

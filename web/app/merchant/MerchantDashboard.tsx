@@ -64,7 +64,7 @@ function Heading({ actions }: { actions?: React.ReactNode }) {
   return (
     <PageHeader
       title="Your ledger"
-      description="Every sale paid through Tillbook, straight from Monad. Your public record shows the same sales, repayments and transactions to any lender."
+      description="Every sale paid through Tillbook, straight from Monad. Share your record link with a lender to show the same sales and repayments."
       actions={actions}
     />
   );

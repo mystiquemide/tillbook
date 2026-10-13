@@ -8,7 +8,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 const description =
-  "Take USDC payments on Monad. Every sale builds a record any lender can see. Draw an advance and repay it a little from each sale.";
+  "Take USDC payments on Monad. Every sale builds a credit record you own and share. Draw an advance and repay it a little from each sale.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://tillbook.midelabs.xyz"),
