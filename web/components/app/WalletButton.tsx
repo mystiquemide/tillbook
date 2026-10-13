@@ -2,7 +2,8 @@
 
 import { useAccount, useSwitchChain } from "wagmi";
 import { useWalletConnect } from "@/lib/useWalletConnect";
-import { Check, ChevronDown, Copy, ExternalLink, LogOut } from "lucide-react";
+import Link from "next/link";
+import { Check, ChevronDown, Compass, Copy, ExternalLink, LogOut, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { privyEnabled } from "@/lib/wagmi";
 import { addressUrl, monad } from "@/lib/chain";
@@ -94,11 +95,13 @@ function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () =>
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
+        aria-label={`Account ${short(address)}`}
         aria-expanded={open}
         className={`${pill} gap-2 bg-surface font-mono text-[13px] text-ink ring-1 ring-hairline hover:bg-[#f1f0ee]`}
       >
         <span className="h-2 w-2 rounded-full bg-positive" aria-hidden="true" />
-        {short(address)}
+        <span className="sr-only sm:not-sr-only">{short(address)}</span>
+        <Wallet size={15} aria-hidden="true" className="sm:hidden" />
         <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
@@ -108,6 +111,10 @@ function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () =>
         >
           <p className="px-3 pt-2 pb-1 text-[12px] text-ink-3">Signed in on Monad mainnet (chain 143)</p>
           <p className="px-3 pb-3 font-mono text-[12px] break-all text-ink-2">{address}</p>
+          <Link role="menuitem" href="/wallet" onClick={() => setOpen(false)} className={item}>
+            <Wallet size={16} aria-hidden="true" />
+            Wallet: balance, send, receive
+          </Link>
           <button
             type="button"
             role="menuitem"
@@ -125,6 +132,10 @@ function AccountMenu({ address, onSignOut }: { address: string; onSignOut: () =>
             <ExternalLink size={16} aria-hidden="true" />
             View on Monadscan
           </a>
+          <Link role="menuitem" href="/start" onClick={() => setOpen(false)} className={item}>
+            <Compass size={16} aria-hidden="true" />
+            How Tillbook works
+          </Link>
           <div className="my-1 h-px bg-hairline" />
           <button
             type="button"

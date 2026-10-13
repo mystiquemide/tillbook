@@ -17,11 +17,11 @@ export function useTx() {
   const { writeContractAsync } = useWriteContract();
   const [state, setState] = useState<TxState>({ status: "idle" });
 
-  const send = useCallback(
-    async (label: string, request: Parameters<typeof writeContractAsync>[0]): Promise<boolean> => {
+  const run = useCallback(
+    async (label: string, submit: () => Promise<Hash>): Promise<boolean> => {
       setState({ status: "signing", label });
       try {
-        const hash = await writeContractAsync(request);
+        const hash = await submit();
         const start = performance.now();
         setState({ status: "pending", label, hash });
         const receipt = await client!.waitForTransactionReceipt({ hash, pollingInterval: 200 });
@@ -37,10 +37,15 @@ export function useTx() {
         return false;
       }
     },
-    [client, writeContractAsync],
+    [client],
   );
 
-  return { state, send, reset: () => setState({ status: "idle" }) };
+  const send = useCallback(
+    (label: string, request: Parameters<typeof writeContractAsync>[0]) => run(label, () => writeContractAsync(request)),
+    [run, writeContractAsync],
+  );
+
+  return { state, send, run, reset: () => setState({ status: "idle" }) };
 }
 
 // Contract errors a user can actually hit, in plain words with a next step.

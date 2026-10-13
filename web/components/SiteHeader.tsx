@@ -18,6 +18,7 @@ import { sections } from "@/lib/sections";
 const tabs = [
   { href: "/merchant", label: "Merchant" },
   { href: "/lend", label: "Lend" },
+  { href: "/wallet", label: "Wallet", wide: true },
 ];
 
 /** One header for every page, so height, width and alignment never shift between routes. */
@@ -39,7 +40,7 @@ export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "a
                     key={t.href}
                     href={t.href}
                     aria-current={active ? "page" : undefined}
-                    className={`rounded-full px-3 py-2.5 text-[14px] transition-colors ${
+                    className={`rounded-full px-3 py-2.5 text-[14px] transition-colors ${"wide" in t ? "hidden sm:inline-block" : ""} ${
                       active ? "bg-surface text-ink ring-1 ring-hairline" : "text-ink-2 hover:text-ink"
                     }`}
                   >

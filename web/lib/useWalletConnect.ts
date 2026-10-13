@@ -15,10 +15,33 @@ type WalletConnect = {
   available: boolean;
 };
 
+const SIGNED_IN_AT = "tillbook:signed-in-at";
+
+function markSignedIn() {
+  try {
+    sessionStorage.setItem(SIGNED_IN_AT, String(Date.now()));
+  } catch {}
+}
+
+/** Milliseconds since the person last finished a sign-in in this tab, or Infinity if they haven't. */
+export function sinceSignIn(): number {
+  try {
+    const at = Number(sessionStorage.getItem(SIGNED_IN_AT));
+    return at > 0 ? Date.now() - at : Infinity;
+  } catch {
+    return Infinity;
+  }
+}
+
 function usePrivyConnect(): WalletConnect {
   const { ready } = usePrivy();
   const [failed, setFailed] = useState(false);
-  const { login } = useLogin({ onError: (e) => setFailed(e !== "exited_auth_flow") });
+  const { login } = useLogin({
+    onError: (e) => setFailed(e !== "exited_auth_flow"),
+    onComplete: ({ wasAlreadyAuthenticated }) => {
+      if (!wasAlreadyAuthenticated) markSignedIn();
+    },
+  });
   const { logout } = useLogout();
   const { disconnectAsync } = useDisconnect();
   return {
