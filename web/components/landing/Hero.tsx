@@ -4,7 +4,7 @@ import { BrowserFrame } from "./BrowserFrame";
 
 export function Hero() {
   return (
-    <section className="px-3 pt-4 md:px-6">
+    <section id="merchants" aria-label="Tillbook for merchants" className="scroll-mt-20 px-3 pt-4 md:px-6">
       <div className="mx-auto max-w-[1392px] overflow-hidden rounded-[32px] bg-surface">
         <div className="mx-auto flex max-w-[880px] flex-col items-center px-6 pt-16 text-center md:pt-24">
           <p className="mb-6 inline-flex h-9 items-center gap-2 rounded-full bg-white px-4 text-[15px] text-ink ring-1 ring-hairline">

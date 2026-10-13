@@ -8,8 +8,8 @@ const columns = [
     items: [
       { label: "For merchants", href: "/merchant" },
       { label: "For lenders", href: "/lend" },
-      { label: "How it works", href: "/#how" },
-      { label: "FAQ", href: "/#faq" },
+      { label: "Live stats", href: "/#network" },
+      { label: "Trust", href: "/#trust" },
     ],
   },
   {
@@ -25,7 +25,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-hairline">
+    <footer className="mt-6 border-t border-hairline">
       <div className="mx-auto grid max-w-[1200px] gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />

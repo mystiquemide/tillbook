@@ -6,16 +6,26 @@ import { Providers } from "./providers";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
+const description =
+  "Take USDC payments on Monad. Every sale builds a record any lender can see. Draw an advance and repay it a little from each sale.";
+
 export const metadata: Metadata = {
   title: "Tillbook: your sales are your credit",
-  description:
-    "Take USDC payments on Monad. Every sale builds a record any lender can see. Draw an advance and repay it a little from each sale.",
+  description,
+  openGraph: { title: "Tillbook: your sales are your credit", description, type: "website", siteName: "Tillbook" },
+  twitter: { card: "summary", title: "Tillbook: your sales are your credit", description },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <a
+          href="#main"
+          className="sr-only z-50 rounded-full bg-ink px-4 py-2 text-[14px] text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        >
+          Skip to content
+        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -250,7 +250,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
             type="button"
             disabled={limit === undefined || limit === 0n}
             onClick={() => limit !== undefined && setInput(formatUnits(limit, 6))}
-            className="text-[14px] text-primary-ink disabled:text-ink-3"
+            className="-mr-2 px-2 py-2 text-[14px] text-primary-ink disabled:text-ink-3"
           >
             Max
           </button>
@@ -272,7 +272,7 @@ function Position({ address, idle, onChange }: { address: `0x${string}`; idle: b
           type="button"
           disabled={busy || amount === null || problem !== null}
           onClick={submit}
-          className="mt-5 h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-[#cfc7ff]"
+          className="mt-5 h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-surface disabled:text-ink-2 disabled:ring-1 disabled:ring-hairline"
         >
           {busy
             ? "Waiting for Monad..."

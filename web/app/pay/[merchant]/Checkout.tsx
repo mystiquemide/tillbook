@@ -10,7 +10,7 @@ import { parseUsdc, short, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 
 const primary =
-  "h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-[#cfc7ff]";
+  "h-12 w-full rounded-full bg-primary text-[16px] font-[450] text-white hover:bg-primary-ink disabled:bg-surface disabled:text-ink-2 disabled:ring-1 disabled:ring-hairline";
 
 export function Checkout({ merchant }: { merchant: `0x${string}` }) {
   const { address, isConnected, chainId } = useAccount();
@@ -84,7 +84,7 @@ export function Checkout({ merchant }: { merchant: `0x${string}` }) {
 
   return (
     <div className="rounded-[24px] border border-hairline bg-white p-6 md:p-8">
-      <p className="text-[14px] text-ink-2">Pay</p>
+      <h1 className="text-[14px] font-[400] text-ink-2">Pay this merchant</h1>
       <a href={addressUrl(merchant)} target="_blank" rel="noreferrer" className="mt-1 block font-mono text-[18px] hover:underline">
         {short(merchant)}
       </a>

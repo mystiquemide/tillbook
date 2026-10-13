@@ -1,4 +1,4 @@
-import { Nav } from "@/components/Nav";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/landing/Hero";
 import { PoolStrip } from "@/components/landing/PoolStrip";
@@ -8,8 +8,8 @@ import { Trust } from "@/components/landing/Trust";
 export default function Home() {
   return (
     <>
-      <Nav />
-      <main>
+      <SiteHeader variant="landing" />
+      <main id="main">
         <Hero />
         <PoolStrip />
         <LenderBand />

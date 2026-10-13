@@ -28,7 +28,7 @@ export function PoolStrip() {
   });
 
   return (
-    <section aria-labelledby="network-title" className="px-3 pt-6 md:px-6">
+    <section id="network" aria-labelledby="network-title" className="scroll-mt-20 px-3 pt-6 md:px-6">
       <div className="mx-auto max-w-[1392px] rounded-[32px] border border-hairline px-6 py-12 md:py-14">
         <h2 id="network-title" className="text-center text-[22px] font-[450] tracking-[-0.03em] md:text-[24px]">
           Live on Monad

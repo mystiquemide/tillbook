@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppNav } from "@/components/app/AppNav";
+import { SiteHeader } from "@/components/SiteHeader";
 import { MerchantDashboard } from "./MerchantDashboard";
 
 export const metadata: Metadata = { title: "Merchant | Tillbook" };
@@ -7,8 +7,8 @@ export const metadata: Metadata = { title: "Merchant | Tillbook" };
 export default function MerchantPage() {
   return (
     <>
-      <AppNav />
-      <main className="mx-auto max-w-[1200px] px-6 py-12">
+      <SiteHeader variant="app" />
+      <main id="main" className="mx-auto max-w-[1200px] px-4 py-12 md:px-6">
         <MerchantDashboard />
       </main>
     </>
