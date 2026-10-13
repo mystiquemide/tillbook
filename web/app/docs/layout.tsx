@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Footer } from "@/components/Footer";
 import { groups } from "./content";
 import { Sidebar } from "./Sidebar";
 import { DocsHeader } from "./DocsHeader";
@@ -18,7 +17,6 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           <div className="mt-8 min-w-0 lg:mt-0">{children}</div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }
