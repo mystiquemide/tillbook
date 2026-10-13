@@ -129,3 +129,17 @@ body {
     animation: none;
   }
 }
+
+/* Redacted value: a soft violet bar with a slow sheen passing over it. */
+.redacted {
+  background: linear-gradient(100deg, rgba(110, 84, 255, 0.14) 30%, rgba(110, 84, 255, 0.32) 50%, rgba(110, 84, 255, 0.14) 70%);
+  background-size: 250% 100%;
+  animation: redacted-sheen 2.8s ease-in-out infinite;
+}
+@keyframes redacted-sheen {
+  from { background-position: 100% 0; }
+  to { background-position: -150% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .redacted { animation: none; }
+}

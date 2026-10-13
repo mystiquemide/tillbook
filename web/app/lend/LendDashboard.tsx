@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { formatUnits } from "viem";
@@ -12,22 +11,14 @@ import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
 import { TxStatus } from "@/components/app/TxStatus";
 import { erc20Abi, poolAbi } from "@/lib/abi";
-import { addresses, isLive, monad, txUrl } from "@/lib/chain";
-import { parseUsdc, short, usdc } from "@/lib/format";
+import { addresses, isLive, monad } from "@/lib/chain";
+import { parseUsdc, usdc } from "@/lib/format";
 import { useTx } from "@/lib/useTx";
 
 /** Pool shares have 12 decimals (6 for USDC plus a 6 decimal offset), so 1 share is 1e12 units. */
 const ONE_SHARE = 10n ** 12n;
 
-type Advance = {
-  merchant: string;
-  amount: string;
-  fee: string;
-  holdbackBps: number;
-  txHash: string;
-  repaid: boolean;
-  repaidTx: string | null;
-};
+type Advance = { n: number; repaid: boolean };
 
 export function LendDashboard() {
   if (!isLive) return <NotLive />;
@@ -366,28 +357,14 @@ function Advances({ query }: { query: ReturnType<typeof useQuery<Advance[]>> }) 
   return (
     <ul className={`${card} divide-y divide-hairline px-5 md:px-6`}>
       {rows.map((a) => (
-        <li key={a.txHash} className="flex items-center justify-between gap-4 py-4">
+        <li key={a.n} className="flex items-center justify-between gap-4 py-4">
           <div className="min-w-0">
-            <Link href={`/m/${a.merchant}`} className="font-mono text-[14px] hover:underline">
-              {short(a.merchant)}
-            </Link>
-            <p className="text-[13px] text-ink-3">
-              Fee <span className="font-mono">{usdc(BigInt(a.fee))}</span>, {a.holdbackBps / 100}% of sales
-            </p>
+            <p className="text-[15px]">Advance #{a.n}</p>
+            <p className="text-[13px] text-ink-3">Merchant and amount kept private</p>
           </div>
-          <div className="text-right">
-            <a href={txUrl(a.txHash)} target="_blank" rel="noreferrer" className="font-mono text-[16px] hover:underline">
-              {usdc(BigInt(a.amount))}
-            </a>
-            <p className="text-[13px]">
-              {a.repaid && a.repaidTx ? (
-                <a href={txUrl(a.repaidTx)} target="_blank" rel="noreferrer" className="text-positive hover:underline">
-                  Repaid
-                </a>
-              ) : (
-                <span className="text-primary-ink">Repaying</span>
-              )}
-            </p>
+          <div className="flex items-center gap-4">
+            <span className="redacted inline-block h-5 w-20 rounded-[6px]" aria-hidden="true" />
+            <span className={`text-[13px] ${a.repaid ? "text-positive" : "text-primary-ink"}`}>{a.repaid ? "Repaid" : "Repaying"}</span>
           </div>
         </li>
       ))}

@@ -19,6 +19,14 @@ type Row = {
   repaidTx: string | null;
 };
 
+/**
+ * What the public sees of each advance: its place in the sequence and whether it's repaid.
+ * Merchant, amount, fee and transaction stay out of the response so the list can't be used to look anyone up.
+ */
+function redact(rows: Row[]) {
+  return rows.map((r, i) => ({ n: rows.length - i, repaid: r.repaid }));
+}
+
 /** Every advance drawn from the pool, newest first, with its repayment status. */
 export async function GET() {
   if (!isLive) return NextResponse.json({ error: "not_live" }, { status: 503 });
@@ -37,7 +45,7 @@ export async function GET() {
         repaidTx: a.repaidTxHash,
       }));
       return NextResponse.json(
-        { advances: rows, head: head.toString() },
+        { advances: redact(rows), head: head.toString() },
         { headers: { "cache-control": "no-store", "x-data-source": "envio" } },
       );
     }
@@ -83,7 +91,7 @@ export async function GET() {
     }
 
     rows.reverse();
-    return NextResponse.json({ advances: rows, head: head.toString() }, { headers: { "cache-control": "no-store" } });
+    return NextResponse.json({ advances: redact(rows), head: head.toString() }, { headers: { "cache-control": "no-store" } });
   } catch (err) {
     console.error("advances read failed", err);
     return NextResponse.json({ error: "rpc_unavailable" }, { status: 502 });

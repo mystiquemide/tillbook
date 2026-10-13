@@ -9,7 +9,7 @@ import { isAddressEqual, zeroAddress, type Address } from "viem";
 import { useBlockNumber, useBytecode, useReadContracts } from "wagmi";
 import { Reveal } from "@/components/motion/Reveal";
 import { poolAbi, routerAbi } from "@/lib/abi";
-import { addressUrl, addresses, txUrl } from "@/lib/chain";
+import { addressUrl, addresses } from "@/lib/chain";
 import { short, usdc } from "@/lib/format";
 import { links } from "@/lib/links";
 
@@ -272,7 +272,7 @@ function CopyPill({ value }: { value: string }) {
   );
 }
 
-type Advance = { merchant: string; amount: string; txHash: string; repaid: boolean; repaidTx: string | null };
+type Advance = { n: number; repaid: boolean };
 type Stats = { payments: number; volume: string; merchants: number; advances: number; repaid: number };
 
 function Activity() {
@@ -295,7 +295,7 @@ function Activity() {
       <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-hairline bg-hairline md:grid-cols-4">
         {[
           ["Sales paid", stats.data?.payments.toLocaleString("en-US")],
-          ["Sales volume", stats.data && `${usdc(BigInt(stats.data.volume))} USDC`],
+          ["Sales volume", "Private"],
           ["Merchants paid", stats.data?.merchants.toLocaleString("en-US")],
           ["Advances repaid", stats.data && `${stats.data.repaid} of ${stats.data.advances}`],
         ].map(([k, v]) => (
@@ -310,26 +310,16 @@ function Activity() {
           <p className="p-6 text-[15px] text-ink-2">Reading from Monad...</p>
         ) : list.length === 0 ? (
           <p className="p-6 text-[15px] text-ink-2">
-            No advances drawn yet. The first one will show here with its transaction, and again when it&apos;s repaid.
+            No advances drawn yet. Each one shows here, and again when it&apos;s repaid. Merchants and amounts stay private.
           </p>
         ) : (
           <ul className="divide-y divide-hairline">
             {list.map((a) => (
-              <li key={a.txHash} className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
-                <Link href={`/m/${a.merchant}`} className="font-mono text-[14px] hover:underline">
-                  {short(a.merchant)}
-                </Link>
+              <li key={a.n} className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
+                <span className="text-[14px]">Advance #{a.n}</span>
                 <span className="flex items-center gap-4 text-[14px]">
-                  <a href={txUrl(a.txHash)} target="_blank" rel="noreferrer" className="font-mono hover:underline">
-                    {usdc(BigInt(a.amount))} USDC
-                  </a>
-                  {a.repaid && a.repaidTx ? (
-                    <a href={txUrl(a.repaidTx)} target="_blank" rel="noreferrer" className="text-positive hover:underline">
-                      Repaid
-                    </a>
-                  ) : (
-                    <span className="text-primary-ink">Repaying</span>
-                  )}
+                  <span className="redacted inline-block h-5 w-20 rounded-[6px]" aria-hidden="true" />
+                  <span className={a.repaid ? "text-positive" : "text-primary-ink"}>{a.repaid ? "Repaid" : "Repaying"}</span>
                 </span>
               </li>
             ))}
