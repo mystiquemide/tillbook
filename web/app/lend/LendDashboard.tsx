@@ -10,7 +10,7 @@ import { privyEnabled } from "@/lib/wagmi";
 import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { PageHeader } from "@/components/app/PageHeader";
 import { CountUp } from "@/components/motion/CountUp";
-import { CircleDollarSign, HandCoins, Landmark, TrendingUp, Wallet } from "lucide-react";
+import { CircleDollarSign, HandCoins, TrendingUp, Wallet } from "lucide-react";
 import type { ComponentType } from "react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { erc20Abi, poolAbi } from "@/lib/abi";
@@ -62,8 +62,6 @@ function Live() {
   return (
     <div className="space-y-12">
       <PageHeader
-        icon={Landmark}
-        eyebrow="Lender pool"
         title="Lend against real sales"
         description="Deposit USDC. Merchants draw advances from it and repay them from their sales. The fee on each advance goes to lenders as it's repaid."
       />

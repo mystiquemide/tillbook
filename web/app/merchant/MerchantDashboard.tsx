@@ -9,7 +9,6 @@ import { ConnectPrompt } from "@/components/app/ConnectPrompt";
 import { NotLive, Notice, card } from "@/components/app/Notice";
 import { PageHeader } from "@/components/app/PageHeader";
 import { privyEnabled } from "@/lib/wagmi";
-import { Store } from "lucide-react";
 import { TxStatus } from "@/components/app/TxStatus";
 import { poolAbi } from "@/lib/abi";
 import { addresses, isLive, monad, txUrl } from "@/lib/chain";
@@ -63,8 +62,6 @@ function Intro({ children }: { children: React.ReactNode }) {
 function Heading({ actions }: { actions?: React.ReactNode }) {
   return (
     <PageHeader
-      icon={Store}
-      eyebrow="Merchant"
       title="Your ledger"
       description="Every sale paid through Tillbook, straight from Monad."
       actions={actions}

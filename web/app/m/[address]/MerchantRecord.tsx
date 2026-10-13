@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useReadContracts } from "wagmi";
 import { Notice } from "@/components/app/Notice";
 import { PageHeader } from "@/components/app/PageHeader";
-import { ScrollText } from "lucide-react";
 import { Breakdown, Ledger, Panel, Reading } from "@/app/merchant/MerchantDashboard";
 import { poolAbi } from "@/lib/abi";
 import { addressUrl, addresses } from "@/lib/chain";
@@ -35,8 +34,6 @@ export function MerchantRecord({ address }: { address: `0x${string}` }) {
   return (
     <div className="space-y-10">
       <PageHeader
-        icon={ScrollText}
-        eyebrow="Public record"
         title="Merchant record"
         description={
           <a
