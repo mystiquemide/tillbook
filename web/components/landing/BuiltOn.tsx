@@ -22,6 +22,24 @@ const stack: Piece[] = [
     role: "The pool is an ERC-4626 vault with EIP-712 offers, SafeERC20 transfers and reentrancy guards.",
     href: "https://www.openzeppelin.com/contracts",
   },
+  {
+    logo: "/brands/privy.png",
+    name: "Privy",
+    role: "Sign in with email or Google and get a Monad wallet on the spot. No extension, no seed phrase.",
+    href: "https://www.privy.io",
+  },
+  {
+    logo: "/brands/envio.png",
+    name: "Envio",
+    role: "A HyperIndex indexer tracks every payment, advance and repayment, so ledgers and offers load instantly.",
+    href: "https://envio.dev",
+  },
+  {
+    logo: "/brands/alchemy.svg",
+    name: "Alchemy",
+    role: "Contract reads and offer pricing run through Alchemy's Monad RPC, with the public RPC as backup.",
+    href: "https://www.alchemy.com",
+  },
 ];
 
 export function BuiltOn() {
@@ -34,12 +52,12 @@ export function BuiltOn() {
             Open rails, end to end
           </h2>
           <p className="mt-4 text-[17px] leading-[1.55] text-ink-2">
-            No private ledger and no custom token. Tillbook is built from public pieces anyone can inspect.
+            No private ledger and no custom token. Tillbook runs on public chain infrastructure and tools that real teams ship with.
           </p>
         </Reveal>
         <ul className="mt-12 grid gap-px overflow-hidden rounded-[20px] border border-hairline bg-hairline md:grid-cols-3">
           {stack.map(({ logo, name, role, href }, i) => (
-            <Reveal as="li" key={name} delay={i * 90} className="bg-white">
+            <Reveal as="li" key={name} delay={(i % 3) * 90} className="bg-white">
               <a href={href} target="_blank" rel="noreferrer" className="group flex h-full flex-col p-7 transition-colors hover:bg-surface">
                 <span className="flex items-center justify-between">
                   <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-surface ring-1 ring-hairline transition-transform duration-300 group-hover:scale-110">

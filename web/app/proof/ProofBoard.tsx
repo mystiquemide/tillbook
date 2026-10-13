@@ -165,12 +165,14 @@ export function ProofBoard() {
               ["Invariant tests, 256 runs × 64 calls", "7"],
               ["Mainnet fork tests on live USDC", "2"],
               ["Underwriter tests", "1,202"],
+              ["Envio indexer tests", "3"],
             ]}
           />
           <div className="mt-4 flex flex-wrap gap-2">
             <Pill href={`${links.repo}/actions`}>CI runs</Pill>
             <Pill href={`${links.repo}/tree/main/contracts/test`}>Contract tests</Pill>
             <Pill href={`${links.repo}/tree/main/underwriter/test`}>Underwriter tests</Pill>
+            <Pill href={`${links.repo}/blob/main/indexer/src/indexer.test.ts`}>Indexer tests</Pill>
           </div>
         </div>
         <div>

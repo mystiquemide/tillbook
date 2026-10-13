@@ -29,8 +29,8 @@ const facts: Fact[] = [
   },
   {
     icon: FlaskConical,
-    value: "1,333 tests",
-    label: "131 contract tests including fuzz and invariant runs, plus 1,202 underwriter tests.",
+    value: "1,336 tests",
+    label: "131 contract tests including fuzz and invariant runs, 1,202 underwriter tests and 3 indexer tests.",
     href: src("contracts/test"),
   },
   {
