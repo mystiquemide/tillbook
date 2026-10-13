@@ -83,7 +83,7 @@ function Live() {
               compact
               cta="Sign in to deposit"
               title={privyEnabled ? "Sign in to deposit" : "Connect to deposit"}
-              body={`Pool numbers are public. ${privyEnabled ? "Sign in" : "Connect a wallet"} with USDC on Monad to deposit, track your share and withdraw.`}
+              body={`${privyEnabled ? "Sign in" : "Connect a wallet"} with USDC on Monad to deposit, track your share and withdraw.`}
             />
           ) : chainId !== monad.id ? (
             <Notice title="Your wallet is on another network." tone="warning">
