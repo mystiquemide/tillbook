@@ -2,9 +2,11 @@
 
 **Your sales are your credit.** Tillbook is onchain revenue-based financing for small merchants. Merchants take USDC stablecoin payments on Monad, every sale builds a credit record the merchant owns, and the pool funds an advance against it. A slice of each later sale repays the advance in the same transaction, so repayment follows real revenue instead of a fixed daily debit.
 
-**[Open the app](https://tillbook.midelabs.xyz)** · [Docs](https://tillbook.midelabs.xyz/docs) · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions) · [X @tillbook_xyz](https://x.com/tillbook_xyz)
+**[Open the app](https://tillbook.midelabs.xyz)** · [Demo video](https://youtu.be/NW-j5vx6bFw) · [Docs](https://tillbook.midelabs.xyz/docs) · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions) · [X @tillbook_xyz](https://x.com/tillbook_xyz)
 
 **Try it in 60 seconds:** [pay a live merchant 0.10 USDC](https://tillbook.midelabs.xyz/pay/0x0D3F699A73D6971e21eFF191Dc15536b48EFC444?amount=0.1) with just an email sign-in. That merchant has an open advance, so 10% of your payment repays it inside the same transaction. You need 0.10 USDC and a little MON on Monad.
+
+[![Watch the Tillbook demo on YouTube](web/public/screens/demo-video.jpg)](https://youtu.be/NW-j5vx6bFw)
 
 ![Merchant dashboard](web/public/screens/merchant.jpg)
 
