@@ -2,7 +2,7 @@
 
 **Your sales are your credit.** Merchants take USDC on Monad, every sale builds a public record, and any lender can fund an advance against it. A slice of each later sale repays the advance in the same transaction.
 
-**[Open the app](https://tillbook.vercel.app)** · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions)
+**[Open the app](https://tillbook.midelabs.xyz)** · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions)
 
 ![Merchant dashboard](web/public/screens/merchant.jpg)
 
@@ -51,10 +51,11 @@ Source: [`underwriter/src/formula.ts`](underwriter/src/formula.ts). The same num
 
 | Page | For | What it does |
 |---|---|---|
-| [`/`](https://tillbook.vercel.app) | Everyone | What Tillbook is, with live pool numbers read straight from the contracts |
-| [`/merchant`](https://tillbook.vercel.app/merchant) | Merchants | Sales ledger, current offer and the math behind it, draw an advance, amount still owed, payment requests with QR codes, CSV export |
+| [`/`](https://tillbook.midelabs.xyz) | Everyone | What Tillbook is, with live pool numbers read straight from the contracts |
+| [`/merchant`](https://tillbook.midelabs.xyz/merchant) | Merchants | Sales ledger, current offer and the math behind it, draw an advance, amount still owed, payment requests with QR codes, CSV export |
 | `/pay/[merchant]` | Customers | Checkout. Shows exactly how the payment splits before you confirm. `?amount=25.50` pre-fills a requested amount |
-| [`/lend`](https://tillbook.vercel.app/lend) | Lenders | Pool size, free liquidity, return since launch, deposit and withdraw, every advance with its repayment status |
+| [`/lend`](https://tillbook.midelabs.xyz/lend) | Lenders | Pool size, free liquidity, return since launch, deposit and withdraw, every advance with its repayment status |
+| [`/proof`](https://tillbook.midelabs.xyz/proof) | Anyone | Live checks against the mainnet contracts, onchain activity, tests and measured gas |
 | `/m/[merchant]` | Lenders and anyone | Public record of a merchant: every sale, repayments, and how their offer is priced |
 
 Every amount links to the transaction or contract read it came from. Nothing in the app is mock data, and empty states say so plainly.
@@ -67,6 +68,17 @@ The repayment happens inside each customer payment, so every sale is a contract 
 - **Cheap enough for small tickets.** A plain payment costs 67,096 gas and a payment that also repays costs 119,601, so a 5 USDC coffee can carry its own repayment.
 - **Native USDC.** Everything settles in Circle's USDC on Monad mainnet, so merchants and lenders hold a real dollar asset, not a wrapped one.
 - **Parallel-friendly by design.** Payments to merchants without an open advance only touch the token balances of payer and merchant. The router has no shared counters, so unrelated payments don't contend for the same storage.
+
+## Built with
+
+| | How Tillbook uses it |
+|---|---|
+| **Monad** | Mainnet, chain 143. Every sale is a contract call, so speed and gas cost decide whether in-sale repayment works at all. |
+| **USDC** | Circle's native USDC is the only asset the pool and router accept. |
+| **OpenZeppelin** | ERC-4626 vault, EIP-712 offer signatures, SafeERC20 and reentrancy guards in `LenderPool`. |
+| **Privy** | Email, Google or wallet sign-in. People without a crypto wallet get an embedded Monad wallet when they sign in, so a customer can pay from a link without installing anything. |
+| **Envio** | A HyperIndex indexer ([`indexer/`](indexer)) tracks payments, advances, repayments and lender flows. The app reads history from it whenever it's caught up to the chain head, and falls back to scanning logs otherwise. |
+| **Alchemy** | Server-side contract reads and offer pricing go through Alchemy's Monad RPC, with the public RPC as automatic fallback. |
 
 ## Deployed on Monad mainnet
 
@@ -104,6 +116,7 @@ Chain 143. Pool deploy block 112997981. Advance cap 5,000 USDC, fixed at deploy.
 | Solidity invariant tests (256 runs × 64 calls) | 7 |
 | Mainnet fork tests against live USDC | 2 |
 | TypeScript underwriter tests | 1,202 |
+| Envio indexer handler tests | 3 |
 
 The parity suite proves that offers signed by the TypeScript underwriter produce the same EIP-712 digest in Solidity and are accepted by `requestAdvance`, and that the app's split preview matches the router exactly. Invariants cover pool solvency, share accounting, outstanding principal and withdrawal limits.
 
@@ -123,7 +136,8 @@ CI runs all of it on every push, along with lint, typecheck and a production bui
 ```
 contracts/     Solidity (Foundry): LenderPool, SplitRouter, tests, deploy script
 underwriter/   TypeScript: offer formula, EIP-712 signing, event reader, seed script
-web/           Next.js app: landing, merchant, checkout, lender and public record pages
+indexer/       Envio HyperIndex: schema, event handlers and tests
+web/           Next.js app: landing, merchant, checkout, lender, record and proof pages
 ```
 
 ## Run it
@@ -135,6 +149,9 @@ MONAD_FORK=true forge test --match-path 'test/fork/*'
 
 # underwriter
 cd underwriter && npm install && npm test
+
+# indexer
+cd indexer && pnpm install && pnpm codegen && pnpm test
 
 # app (reads the mainnet contracts above)
 cd web && npm install
@@ -163,6 +180,8 @@ The script refuses to run on any chain except Monad mainnet and checks that the 
 ## Where this goes next
 
 - **Point-of-sale plugins** so existing card-and-QR checkouts can route USDC through the split without a new app.
+- **Decentralized underwriting** by running the offer formula as a Chainlink CRE workflow, which removes the single signing key.
+- **More stablecoins**, starting with AUSD, through a second pool per asset. The contracts already take the token as a constructor argument.
 - **Multiple underwriters and pools** competing on price for the same public record.
 - **Portable credit history** other protocols can read, so a merchant's record works beyond Tillbook.
 - **A small protocol fee** on advance fees once the pool has volume.
