@@ -63,13 +63,14 @@ export const indexer = {
     const d = await gql<{
       Totals_by_pk: { payments: number; volume: string; merchants: number; advances: number; advanced: string; advancesRepaid: number } | null;
     }>(`{ Totals_by_pk(id: "global") { payments volume merchants advances advanced advancesRepaid } }`);
-    return d.Totals_by_pk;
+    // No row yet just means nothing has happened onchain yet.
+    return d.Totals_by_pk ?? { payments: 0, volume: "0", merchants: 0, advances: 0, advanced: "0", advancesRepaid: 0 };
   },
   async lender(owner: string) {
     const d = await gql<{ Lender_by_pk: { deposited: string; withdrawn: string } | null }>(
       `query ($id: String!) { Lender_by_pk(id: $id) { deposited withdrawn } }`,
       { id: owner.toLowerCase() },
     );
-    return d.Lender_by_pk;
+    return d.Lender_by_pk ?? { deposited: "0", withdrawn: "0" };
   },
 };
