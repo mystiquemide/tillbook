@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/Footer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotLive } from "@/components/app/Notice";
 import { isLive } from "@/lib/chain";
@@ -38,7 +37,6 @@ export default function ProofPage() {
         </section>
         <div className="mx-auto max-w-[1100px] px-4 pb-24 md:px-6">{isLive ? <ProofBoard /> : <NotLive />}</div>
       </main>
-      <Footer />
     </>
   );
 }

@@ -1,45 +1,26 @@
-import { ArrowUpRight, BadgeCheck, Blocks, CircleDollarSign, FlaskConical, PlugZap, ShieldCheck } from "lucide-react";
-import type { ComponentType } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "../motion/Reveal";
 
-type Piece = { icon: ComponentType<{ size?: number; strokeWidth?: number }>; name: string; role: string; href: string };
+type Piece = { logo: string; name: string; role: string; href: string };
 
 const stack: Piece[] = [
   {
-    icon: Blocks,
+    logo: "/brands/monad.svg",
     name: "Monad",
     role: "Mainnet, chain 143. Fast, cheap blocks are what make a repayment inside every single sale practical.",
     href: "https://monad.xyz",
   },
   {
-    icon: CircleDollarSign,
+    logo: "/brands/usdc.svg",
     name: "USDC",
     role: "Circle's native USDC on Monad. Every payment, advance and repayment settles in it.",
     href: "https://www.circle.com/usdc",
   },
   {
-    icon: ShieldCheck,
+    logo: "/brands/openzeppelin.svg",
     name: "OpenZeppelin",
     role: "The pool is an ERC-4626 vault with EIP-712 offers, SafeERC20 transfers and reentrancy guards.",
     href: "https://www.openzeppelin.com/contracts",
-  },
-  {
-    icon: FlaskConical,
-    name: "Foundry",
-    role: "Unit, fuzz and invariant tests, plus fork tests that run the full loop against live USDC.",
-    href: "https://getfoundry.sh",
-  },
-  {
-    icon: PlugZap,
-    name: "viem and wagmi",
-    role: "Typed contract reads, wallet connection and the underwriter's EIP-712 signing.",
-    href: "https://viem.sh",
-  },
-  {
-    icon: BadgeCheck,
-    name: "Sourcify",
-    role: "Both contracts are source-verified, so anyone can match the code to what runs onchain.",
-    href: "https://sourcify.dev",
   },
 ];
 
@@ -56,13 +37,14 @@ export function BuiltOn() {
             No private ledger and no custom token. Tillbook is built from public pieces anyone can inspect.
           </p>
         </Reveal>
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-[20px] border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
-          {stack.map(({ icon: Icon, name, role, href }, i) => (
-            <Reveal as="li" key={name} delay={(i % 3) * 90} className="bg-white">
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-[20px] border border-hairline bg-hairline md:grid-cols-3">
+          {stack.map(({ logo, name, role, href }, i) => (
+            <Reveal as="li" key={name} delay={i * 90} className="bg-white">
               <a href={href} target="_blank" rel="noreferrer" className="group flex h-full flex-col p-7 transition-colors hover:bg-surface">
                 <span className="flex items-center justify-between">
-                  <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-primary-tint text-primary-ink transition-transform duration-300 group-hover:scale-110">
-                    <Icon size={22} strokeWidth={1.75} />
+                  <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-surface ring-1 ring-hairline transition-transform duration-300 group-hover:scale-110">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={logo} alt="" width={26} height={26} className="h-[26px] w-[26px]" />
                   </span>
                   <ArrowUpRight
                     size={18}
