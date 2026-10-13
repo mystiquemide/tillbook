@@ -1,8 +1,10 @@
 # Tillbook
 
-**Your sales are your credit.** Tillbook is onchain revenue-based financing for small merchants. Merchants take USDC stablecoin payments on Monad, every sale builds a public credit record, and any lender can fund an advance against it. A slice of each later sale repays the advance in the same transaction, so repayment follows real revenue instead of a fixed daily debit.
+**Your sales are your credit.** Tillbook is onchain revenue-based financing for small merchants. Merchants take USDC stablecoin payments on Monad, every sale builds a credit record the merchant owns, and the pool funds an advance against it. A slice of each later sale repays the advance in the same transaction, so repayment follows real revenue instead of a fixed daily debit.
 
 **[Open the app](https://tillbook.midelabs.xyz)** · [Contracts on Monadscan](https://monadscan.com/address/0x317E89b89aeE6af8c1fD6AaceF06daaD733EFFaE) · [CI](https://github.com/mystiquemide/tillbook/actions)
+
+**Try it in 60 seconds:** [pay a live merchant 0.10 USDC](https://tillbook.midelabs.xyz/pay/0x0D3F699A73D6971e21eFF191Dc15536b48EFC444?amount=0.1) with just an email sign-in. That merchant has an open advance, so 10% of your payment repays it inside the same transaction. You need 0.10 USDC and a little MON on Monad.
 
 ![Merchant dashboard](web/public/screens/merchant.jpg)
 
@@ -19,6 +21,30 @@
 | **For newcomers** | Email or Google sign-in, a built-in wallet with send, receive and key backup, and a 2-minute interactive walkthrough at [`/start`](https://tillbook.midelabs.xyz/start) |
 | **Quality** | 1,336 automated tests including fuzz, invariant and mainnet-fork tests, run in CI on every push |
 | **Try it** | [tillbook.midelabs.xyz](https://tillbook.midelabs.xyz) · [Live proof page](https://tillbook.midelabs.xyz/proof) |
+
+## Live on mainnet
+
+A full loop ran on Monad mainnet with real USDC: one lender, one merchant, three different customers.
+
+| Step | Transaction |
+|---|---|
+| Lender deposits 2 USDC into the pool | [`0x01ab63...2050`](https://monadscan.com/tx/0x01ab631cb550ad8508d11272b3955417d87c9e3da4631e8b89a3f049e2902050) |
+| Customer 1 pays the merchant 0.50 | [`0x490c08...e6`](https://monadscan.com/tx/0x490c08e9ddc35d9ba935996d004dff0906bab4539a0124597d4e150ef576d2e6) |
+| Customer 2 pays 0.50 | [`0xc98d85...61`](https://monadscan.com/tx/0xc98d8594098110b852dec078a5145badc4941819b168abe0a610311ec7b9ad61) |
+| Customer 3 pays 0.50 | [`0x890922...fc`](https://monadscan.com/tx/0x890922bcd80e8b798e233d959bcde8ee1ce1b352ec87a515f09955ca3aa8bbfc) |
+| Merchant draws a signed advance | [`0xc73669...7d`](https://monadscan.com/tx/0xc73669cc7b3645e04181219c87ca295f0cb7f8854e55fa3001fa21a080926d7c) |
+| A later sale repays 10% to the pool in the same payment | [`0xe53c35...50`](https://monadscan.com/tx/0xe53c3535e7f400696bce88f376fa10c8e0305e5a8dda1d14003dcb1f80f2fd50) |
+
+## Try it yourself
+
+You need a little MON for fees and some USDC on Monad. Small amounts are enough.
+
+1. **Lend.** Sign in at `/lend`, enter an amount, check the review and deposit. You confirm twice: allow USDC, then deposit.
+2. **Get paid.** Sign in with a second account at `/merchant` and copy your payment link or QR code.
+3. **Collect sales.** Pay that link from three different wallets. Your own payments don't count.
+4. **Draw.** Back on `/merchant`, the offer appears with every input shown. Draw it and the USDC lands in your wallet.
+5. **Repay by selling.** Pay the link again and watch "Still owed" drop by 10% of the sale.
+6. **Check the wallet.** `/wallet` shows each step labelled in Activity.
 
 ## New to crypto? Start here
 
@@ -40,7 +66,7 @@ Small merchants get financing from whoever processes their payments, and the dec
 - A Stripe Capital offer fell from about $35,000 to $6,000 while the merchant's revenue grew. ([r/stripe](https://www.reddit.com/r/stripe/comments/1p1g2sb/stripe_capital_new_offer_update/))
 - Merchant cash advances take fixed daily debits whether the shop sold anything that day or not.
 
-The merchant's repayment history is locked inside one platform, so they can't take it anywhere else. Tillbook keeps that history onchain, where the merchant owns it and any lender can read it. The result is transparent underwriting, portable credit and capital that flows to merchants based on what they actually sell.
+The merchant's repayment history is locked inside one platform, so they can't take it anywhere else. Tillbook keeps that history onchain, where the merchant owns it and can share it with any lender. The result is transparent underwriting, portable credit and capital that flows to merchants based on what they actually sell, without Tillbook ever displaying anyone's balances.
 
 ## How it works
 
@@ -196,30 +222,6 @@ Chain 143. Pool deploy block 112997981. Advance cap 5,000 USDC, fixed at deploy.
 | [`LenderPool`](contracts/src/LenderPool.sol) | ERC-4626 USDC vault. Pays advances against EIP-712 offers and takes repayments. Fees reach lenders as repayments arrive. Withdrawals are limited to liquidity that isn't lent out. |
 | [`SplitRouter`](contracts/src/SplitRouter.sol) | Splits each payment between the merchant and the pool. Holds no funds and has no owner. |
 
-## Live on mainnet
-
-A full loop ran on Monad mainnet with real USDC: one lender, one merchant, three different customers.
-
-| Step | Transaction |
-|---|---|
-| Lender deposits 2 USDC into the pool | [`0x01ab63...2050`](https://monadscan.com/tx/0x01ab631cb550ad8508d11272b3955417d87c9e3da4631e8b89a3f049e2902050) |
-| Customer 1 pays the merchant 0.50 | [`0x490c08...e6`](https://monadscan.com/tx/0x490c08e9ddc35d9ba935996d004dff0906bab4539a0124597d4e150ef576d2e6) |
-| Customer 2 pays 0.50 | [`0xc98d85...61`](https://monadscan.com/tx/0xc98d8594098110b852dec078a5145badc4941819b168abe0a610311ec7b9ad61) |
-| Customer 3 pays 0.50 | [`0x890922...fc`](https://monadscan.com/tx/0x890922bcd80e8b798e233d959bcde8ee1ce1b352ec87a515f09955ca3aa8bbfc) |
-| Merchant draws a signed advance | [`0xc73669...7d`](https://monadscan.com/tx/0xc73669cc7b3645e04181219c87ca295f0cb7f8854e55fa3001fa21a080926d7c) |
-| A later sale repays 10% to the pool in the same payment | [`0xe53c35...50`](https://monadscan.com/tx/0xe53c3535e7f400696bce88f376fa10c8e0305e5a8dda1d14003dcb1f80f2fd50) |
-
-## Try it yourself
-
-You need a little MON for fees and some USDC on Monad. Small amounts are enough.
-
-1. **Lend.** Sign in at `/lend`, enter an amount, check the review and deposit. You confirm twice: allow USDC, then deposit.
-2. **Get paid.** Sign in with a second account at `/merchant` and copy your payment link or QR code.
-3. **Collect sales.** Pay that link from three different wallets. Your own payments don't count.
-4. **Draw.** Back on `/merchant`, the offer appears with every input shown. Draw it and the USDC lands in your wallet.
-5. **Repay by selling.** Pay the link again and watch "Still owed" drop by 10% of the sale.
-6. **Check the wallet.** `/wallet` shows each step labelled in Activity.
-
 ## Security model
 
 - **No admin keys.** No owner, no pause, no upgrades. Funds move only by the contract rules.
@@ -240,7 +242,7 @@ You need a little MON for fees and some USDC on Monad. Small amounts are enough.
 | TypeScript underwriter tests | 1,202 |
 | Envio indexer handler tests | 3 |
 
-The parity suite proves that offers signed by the TypeScript underwriter produce the same EIP-712 digest in Solidity and are accepted by `requestAdvance`, and that the app's split preview matches the router exactly. Invariants cover pool solvency, share accounting, outstanding principal and withdrawal limits.
+What matters more than the count: invariants prove pool solvency and share accounting hold under random sequences of deposits, advances, repayments and withdrawals, and the parity suite proves that offers signed by the TypeScript underwriter produce the same EIP-712 digest in Solidity and are accepted by `requestAdvance`, and that the app's split preview matches the router exactly.
 
 CI runs all of it on every push, along with lint, typecheck and a production build of the app.
 
@@ -310,7 +312,7 @@ The script refuses to run on any chain except Monad mainnet and checks that the 
 - **Point-of-sale plugins** so existing card-and-QR checkouts can route USDC through the split without a new app.
 - **Decentralized underwriting** by running the offer formula as a Chainlink CRE workflow, which removes the single signing key.
 - **More stablecoins**, starting with AUSD, through a second pool per asset. The contracts already take the token as a constructor argument.
-- **Multiple underwriters and pools** competing on price for the same public record.
+- **Multiple underwriters and pools** competing on price for the same merchant record.
 - **Portable credit history** other protocols can read, so a merchant's record works beyond Tillbook.
 
 ## Prior art
