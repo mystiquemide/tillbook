@@ -15,6 +15,7 @@ const columns = [
     title: "Product",
     items: [
       { label: "Getting started", href: "/start" },
+      { label: "Docs", href: "/docs" },
       { label: "For merchants", href: "/merchant" },
       { label: "For lenders", href: "/lend" },
       { label: "Trust", href: "/trust" },

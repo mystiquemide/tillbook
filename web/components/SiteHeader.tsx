@@ -70,6 +70,13 @@ export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "a
             >
               Proof
             </Link>
+            <Link
+              href="/docs"
+              aria-current={path.startsWith("/docs") ? "page" : undefined}
+              className={`py-3 text-[14px] transition-colors hover:text-ink ${path.startsWith("/docs") ? "text-ink" : "text-ink-2"}`}
+            >
+              Docs
+            </Link>
           </nav>
         )}
         <div className="flex shrink-0 items-center gap-2">
@@ -120,6 +127,11 @@ export function SiteHeader({ variant, wallet = true }: { variant: "landing" | "a
             <li>
               <Link href="/proof" className="block border-b border-hairline py-3.5 text-[16px] text-ink">
                 Proof
+              </Link>
+            </li>
+            <li>
+              <Link href="/docs" className="block border-b border-hairline py-3.5 text-[16px] text-ink">
+                Docs
               </Link>
             </li>
             <li>
