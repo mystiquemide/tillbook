@@ -46,8 +46,12 @@ function indexedHistory(payments: IndexedPayment[], head: bigint) {
   const rows = payments.filter((p) => BigInt(p.blockNumber) <= head);
   const times = new Map(rows.map((p) => [BigInt(p.blockNumber), BigInt(p.timestamp)]));
   return {
-    getLogs: async () =>
-      rows.map((p) => ({
+    // Honour the requested range: the underwriter may split history into several ranges, and returning
+    // every row for each one would count the same sale more than once.
+    getLogs: async ({ fromBlock, toBlock }: { fromBlock: bigint; toBlock: bigint }) =>
+      rows
+        .filter((p) => BigInt(p.blockNumber) >= fromBlock && BigInt(p.blockNumber) <= toBlock)
+        .map((p) => ({
         args: { payer: getAddress(p.payer), amount: BigInt(p.amount), repaid: BigInt(p.repaid), ref: p.ref as `0x${string}` },
         blockNumber: BigInt(p.blockNumber),
         transactionHash: p.txHash as `0x${string}`,
